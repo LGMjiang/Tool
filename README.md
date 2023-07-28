@@ -1,3 +1,2 @@
 # rules
-javdb
-https://raw.githubusercontent.com/LGMjiang/embylines/main/lines
+javdb https://raw.githubusercontent.com/LGMjiang/embylines/main/lines
