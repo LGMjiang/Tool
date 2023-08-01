@@ -1,7 +1,7 @@
 # rules<bar>
 ***
-## Emby<br>
+### Emby<br>
 https://raw.githubusercontent.com/LGMjiang/Tools/main/Loon/Rules/Emby.list
-***
-## JavDB<br>
+---
+### JavDB<br>
 https://raw.githubusercontent.com/LGMjiang/Tools/main/Loon/Rules/JavDB.list
