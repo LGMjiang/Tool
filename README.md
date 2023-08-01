@@ -1,5 +1,5 @@
 # rules<bar>
-___
+---
 ### Emby<br>
 https://raw.githubusercontent.com/LGMjiang/Tools/main/Loon/Rules/Emby.list
 ---
