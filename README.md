@@ -1,2 +1,3 @@
 # rules<bar>
-javdb https://raw.githubusercontent.com/LGMjiang/embylines/main/lines
+## Emby<br>
+https://raw.githubusercontent.com/LGMjiang/Tools/main/Loon/Rules/Emby.list
