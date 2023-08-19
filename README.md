@@ -4,5 +4,5 @@
 
 ### [JavDB](https://raw.githubusercontent.com/LGMjiang/Tools/main/Loon/Rules/JavDB.list)
 
-自用
+都是搬运大佬们的
 
