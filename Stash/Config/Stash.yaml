@@ -1,0 +1,162 @@
+# Author:https://github.com/Repcz
+# TG:https://t.me/QVQ_Channel
+# 以 ';' 或 '#' 或 '//' 开头的配置文件行为注释行
+#
+# 最后更新时间: 2023/8/1
+#
+# ================
+
+mode: rule            # 规则模式：rule（规则） / global（全局代理）/ direct（全局直连）/ script (脚本)
+log-level: info       # 设置日志输出级别 (5 个级别：silent / error / warning / info / debug）
+
+dns:
+  enable: true             # 关闭将使用系统 DNS
+  ipv6: false              # IPV6解析开关；如果为false，将返回ipv6结果为空
+  enhanced-mode: fake-ip   # 模式：redir-host或fake-ip
+  listen: 0.0.0.0:53       # DNS监听地址
+  default-nameserver:      # 解析非IP的dns用的dns服务器,只支持纯IP
+     - 223.5.5.5
+     - 119.29.29.29
+  fake-ip-range: 198.18.0.1/16    # Fake-IP解析地址池
+  fake-ip-filter: ['*.lan', 'cable.auth.com', '*.msftconnecttest.com', '*.msftncsi.com', 'network-test.debian.org', 'detectportal.firefox.com', 'resolver1.opendns.com', '*.srv.nintendo.net', '*.stun.playstation.net', 'xbox.*.microsoft.com', '*.xboxlive.com', 'stun.*', 'global.turn.twilio.com', 'global.stun.twilio.com', 'localhost.*.qq.com', 'localhost.*.weixin.qq.com', '*.logon.battlenet.com.cn', '*.logon.battle.net', '*.blzstatic.cn', 'music.163.com', '*.music.163.com', '*.126.net', 'musicapi.taihe.com', 'music.taihe.com', 'songsearch.kugou.com', 'trackercdn.kugou.com', '*.kuwo.cn', 'api-jooxtt.sanook.com', 'api.joox.com', 'joox.com', 'y.qq.com', '*.y.qq.com', 'streamoc.music.tc.qq.com', 'mobileoc.music.tc.qq.com', 'isure.stream.qqmusic.qq.com', 'dl.stream.qqmusic.qq.com', 'aqqmusic.tc.qq.com', 'amobile.music.tc.qq.com', '*.xiami.com', '*.music.migu.cn', 'music.migu.cn', 'proxy.golang.org', '*.mcdn.bilivideo.cn', '*.cmpassport.com', 'id6.me', 'open.e.189.cn', 'mdn.open.wo.cn', 'opencloud.wostore.cn', 'auth.wosms.cn', '*.jegotrip.com.cn', '*.icitymobile.mobi', '*.pingan.com.cn', '*.cmbchina.com', 'pool.ntp.org', '*.pool.ntp.org', 'ntp.*.com', 'time.*.com', 'ntp?.*.com', 'time?.*.com', 'time.*.gov', 'time.*.edu.cn', '*.ntp.org.cn', 'PDC._msDCS.*.*', 'DC._msDCS.*.*', 'GC._msDCS.*.*']
+                          # fake ip 白名单列表'以下地址不会下发fakeip映射用于连接
+  nameserver:             # 默认DNS服务器，支持udp/tcp/dot/doh/doq
+     - 223.5.5.5
+     - 119.29.29.29
+  fallback:               # 解析国外域名的DNS服务器
+     - https://doh.pub/dns-query
+     - https://dns.alidns.com/dns-query
+  fallback-filter:        # 配置 fallback 使用条件
+    geoip: true           # 配置是否使用 geoip
+    geoip-code: CN        # 当 nameserver 域名的 IP 查询 geoip 库为 CN 时，不使用 fallback 中的 DNS 查询结果
+    ipcidr: [240.0.0.0/4] # 在这个网段内的 IP 地址会被考虑为被污染的 IP
+
+###建立锚点
+    
+# 策略组引用相关参数
+pr: &pr {type: select, proxies: [手动切换, 香港节点, 美国节点, 狮城节点, 日本节点,  台湾节点, 自动选择, DIRECT]}
+
+# 订阅更新和延迟测试相关参数
+p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://www.gstatic.com/generate_204, interval: 1800}}
+
+# 自动选择策略组：选取延迟最低节点
+auto: &auto {type: url-test, lazy: true, url: http://www.gstatic.com/generate_204, interval: 900, use: [Subscribe]}
+
+# 手动选择策略组：手动选择想要的节点/策略组
+select: &select {type: select, use: [Subscribe]}
+
+# 故障回退策略组：策略组将按顺序选择你列表中第一个可用的节点
+fallback: &fallback {type: fallback, lazy: true, url: http://www.gstatic.com/generate_204, interval: 900, use: [Subscribe]}
+
+# 负载均衡策略组：不同的请求将使用不同的代理节点
+load-balance: &load-balance {type: load-balance, lazy: true, url: http://www.gstatic.com/generate_204, interval: 900, use: [Subscribe]}
+
+# classical规则相关
+c: &c {type: http, behavior: classical, interval: 86400}
+
+# domain规则相关
+d: &d {type: http, behavior: domain, interval: 86400}
+
+# ipcidr规则相关
+i: &i {type: http, behavior: ipcidr, interval: 86400}
+
+###结束
+
+# > 订阅信息展示
+subscribe-url: http://your-service-provider
+
+proxies:
+
+proxy-providers:
+# > 远程服务器
+ Subscribe: {<<: *p, url: http://your-service-provider}
+
+proxy-groups:
+
+ # 分流分组
+
+ - {name: 手动切换,  icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png, <<: *select}
+
+ - {name: 国外网站, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png, <<: *pr}
+
+ - {name: 国际媒体, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png, <<: *pr}
+
+ - {name: 苹果服务, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png, <<: *pr}
+
+ - {name: 微软服务, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png, <<: *pr}
+
+ - {name: 谷歌服务, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png, <<: *pr}
+
+ - {name: 电报消息, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png, <<: *pr}
+
+ - {name: 推特消息, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png, <<: *pr}
+
+ - {name: 游戏平台, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png, <<: *pr}
+
+# - {name: 哔哩哔哩, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png, type: select, proxies: [DIRECT, 香港节点, 台湾节点]}
+
+ - {name: OpenAI, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png, type: select, proxies: [美国节点, 手动切换]}
+
+ - {name: 广告拦截, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png, type: select, proxies: [REJECT, DIRECT]}
+
+ - {name: 兜底分流, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png, <<: *pr}
+
+ # 节点地区分流
+ 
+ - {name: 香港节点, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png, <<: *auto, filter: "^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"}
+
+ - {name: 日本节点, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png, <<: *auto, filter: "^(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|Japan)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"}
+
+ - {name: 美国节点, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png, <<: *auto, filter: "^(?=.*((?i)🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|United States)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"}
+
+ - {name: 台湾节点, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png, <<: *auto, filter: "^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"}
+
+ - {name: 狮城节点, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png, <<: *auto, filter: "^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"}
+
+ - {name: 自动选择,  icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png, <<: *auto}
+ 
+rule-providers:
+  DMM:
+    <<: *c
+    path: ./ruleset/DMM_No_Resolve.yaml
+    url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/DMM/DMM_No_Resolve.yaml
+  
+  JavDB:
+    <<: *c
+    path: ./ruleset/JavDB.yaml
+    url: https://github.com/LGMjiang/Tools/raw/main/Stash/Rules/JavDB.yaml
+
+rules:
+  - SCRIPT,quic,REJECT
+  - GEOSITE,category-ads-all,广告拦截
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT
+  - GEOSITE,openai,OpenAI
+  - GEOSITE,category-games,游戏平台
+  - GEOSITE,youtube,谷歌服务
+  - GEOIP,netflix,国际媒体
+  - GEOSITE,netflix,国际媒体
+  - GEOSITE,hbo,国际媒体
+  - GEOSITE,disney,国际媒体
+  - GEOSITE,primevideo,国际媒体
+  - GEOSITE,github,微软服务
+#  - GEOSITE,bilibili,哔哩哔哩
+  - GEOSITE,telegram,电报消息
+  - GEOIP,telegram,电报消息
+  - GEOIP,twitter,推特消息
+  - GEOSITE,twitter,推特消息
+  - GEOSITE,apple,苹果服务
+  - GEOSITE,microsoft,微软服务
+  - GEOIP,google,谷歌服务
+  - GEOSITE,google,谷歌服务
+#  - GEOSITE,bilibili,哔哩哔哩
+  - RULE-SET,JavDB,香港节点
+  - RULE-SET,DMM,日本节点
+  - GEOSITE,geolocation-!cn,国外网站
+  - GEOSITE,cn,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,兜底分流
+
+script:
+  shortcuts:
+    quic: network == 'udp' and dst_port == 443
