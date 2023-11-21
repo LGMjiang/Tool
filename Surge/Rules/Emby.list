@@ -1,62 +1,68 @@
 # misakaf
-DOMAIN,emby.misakaf.org
+DOMAIN-SUFFIX,emby.misakaf.org
 
 # pronemby
-DOMAIN,pornemby.club
+DOMAIN-SUFFIX,pornemby.club
 
 # singularity
-# DOMAIN,singularity.deja-vu.beauty
+# DOMAIN-SUFFIX,singularity.deja-vu.beauty
 
 # 佛系
-DOMAIN,1.4545.cf
+DOMAIN-SUFFIX,1.4545.cf
 
 # infinityfly
-#DOMAIN,vx.infinityfly.top
+# DOMAIN-SUFFIX,vx.infinityfly.top
 
 # 放映厅
-DOMAIN,emby.9191001.xyz
+DOMAIN-SUFFIX,emby.9191001.xyz
 
 # 纸片人
-DOMAIN,embyplus.org
+DOMAIN-SUFFIX,embyplus.org
 
 # nmemby
-DOMAIN,film.ohhhh.org
+DOMAIN-SUFFIX,film.ohhhh.org
 
 # 私人影院
-DOMAIN,emby.agon.cf
+DOMAIN-SUFFIX,emby.agon.cf
 
 # 剧狗
-DOMAIN,ju.dog
+DOMAIN-SUFFIX,ju.dog
 
 # 电报服
-DOMAIN,cf.imetyou.top
+DOMAIN-SUFFIX,cf.imetyou.top
 
 # emby hub
-# DOMAIN,emby.ednovas.org
+# DOMAIN-SUFFIX,emby.ednovas.org
 
 # 星光
-DOMAIN,free.emby.eu.org
+DOMAIN-SUFFIX,free.emby.eu.org
 
 # TreeDiagram
-DOMAIN,789.123456.al
+DOMAIN-SUFFIX,789.123456.al
 
 # 会员制emby餐厅
-DOMAIN,emby.mius.uk
+DOMAIN-SUFFIX,emby.mius.uk
 
 # tank
-# DOMAIN,cs.tank88.top
+# DOMAIN-SUFFIX,cs.tank88.top
 
 # hxd
-# DOMAIN,usa.bili.rip
+# DOMAIN-SUFFIX,usa.bili.rip
 
 # Dolphin
-# DOMAIN,public.emby.ws
+# DOMAIN-SUFFIX,public.emby.ws
 
 # 叔服
-# DOMAIN,emby3.mcjoker.xyz
+# DOMAIN-SUFFIX,emby3.mcjoker.xyz
 
 # 酷安emby
-# DOMAIN,140.238.6.215
+# DOMAIN-SUFFIX,140.238.6.215
 
 # 卷毛鼠
-DOMAIN,cf.jmsooo.com
+DOMAIN-SUFFIX,cf.jmsooo.com
+
+# ACA Emby
+DOMAIN-SUFFIX,emby.aca.best
+
+# ACA Porn
+DOMAIN-SUFFIXporn.aca.best
