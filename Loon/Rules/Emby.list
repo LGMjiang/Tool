@@ -26,7 +26,7 @@ DOMAIN-SUFFIX,film.ohhhh.org
 DOMAIN-SUFFIX,emby.agon.cf
 
 # 剧狗
-DOMAIN-SUFFIX,ju.dog
+# DOMAIN-SUFFIX,ju.dog
 
 # 电报服
 DOMAIN-SUFFIX,cf.imetyou.top
@@ -41,7 +41,7 @@ DOMAIN-SUFFIX,free.emby.eu.org
 DOMAIN-SUFFIX,789.123456.al
 
 # 会员制emby餐厅
-DOMAIN-SUFFIX,emby.mius.uk
+# DOMAIN-SUFFIX,emby.mius.uk
 
 # tank
 # DOMAIN-SUFFIX,cs.tank88.top
