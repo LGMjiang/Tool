@@ -14,6 +14,6 @@
 Sub_info = script-name=Sub_info,update-interval=3600
 Sub_info = script-name=Sub_info1,update-interval=3600
 [Script]
-Sub_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Sub-info/Moore/Sub-info.js,script-update-interval=0,argument=url=http%3A%2F%2Fapi.aca.best%2Fapi%2Fv1%2Fclient%2Fsubscribe%3Ftoken%3D9d350f173df99d23acd6b271edafd6e8&reset_day=13&title=ACA&icon=externaldrive.fill.badge.icloud=#007aff
+Sub_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Sub-info/Moore/Sub-info.js,script-update-interval=0,argument=url=&reset_day=13&title=ACA&icon=externaldrive.fill.badge.icloud=#007aff
 
-Sub_info1 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Sub-info/Moore/Sub-info.js,script-update-interval=0,argument=url=https%3A%2F%2Fsub.yxhc.date%2Fapi%2Fv1%2Fclient%2Fsubscribe%3Ftoken%3D236b12b1c0aa7fc38adf3b8f3283636e&title=月夕华晨 &icon=externaldrive.fill.badge.icloud=#007aff
+Sub_info1 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Sub-info/Moore/Sub-info.js,script-update-interval=0,argument=url=&title=月夕华晨 &icon=externaldrive.fill.badge.icloud=#007aff
