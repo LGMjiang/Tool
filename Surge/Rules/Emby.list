@@ -1,5 +1,8 @@
 # misakaf
 DOMAIN-SUFFIX,emby.misakaf.org
+DOMAIN-SUFFIX,stream1.misakaf.org
+DOMAIN-SUFFIX,stream2.misakaf.org
+DOMAIN-SUFFIX,stream3.misakaf.org
 
 # pronemby
 DOMAIN-SUFFIX,pornemby.club
