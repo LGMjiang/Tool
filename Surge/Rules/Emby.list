@@ -51,6 +51,9 @@ DOMAIN-SUFFIX,789.123456.al
 # 会员制emby餐厅
 # DOMAIN-SUFFIX,emby.mius.uk
 
+# 牢大的野兽餐厅
+DOMAIN-SUFFIX,emby-us-v4.mius.uk
+
 # tank
 # DOMAIN-SUFFIX,cs.tank88.top
 
