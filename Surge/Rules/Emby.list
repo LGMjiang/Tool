@@ -37,7 +37,18 @@ DOMAIN-SUFFIX,film.ohhhh.org
 # DOMAIN-SUFFIX,ju.dog
 
 # Paul电报服
+# cf线路,可以加https访问
 DOMAIN-SUFFIX,cf.imetyou.top
+# 随机线路
+DOMAIN-SUFFIX,emby.imetyou.top
+# 落地机线路
+DOMAIN-SUFFIX,fk.imetyou.top
+# 首尔中转
+DOMAIN-SUFFIX,kr.imetyou.top
+# 新加坡中转
+DOMAIN-SUFFIX,sg.imetyou.top
+# 春川中转
+DOMAIN-SUFFIX,chun.imetyou.top
 
 # emby hub
 # DOMAIN-SUFFIX,emby.ednovas.org
@@ -52,7 +63,10 @@ DOMAIN-SUFFIX,789.123456.al
 # DOMAIN-SUFFIX,emby.mius.uk
 
 # 牢大的野兽餐厅
+# US-V4
 DOMAIN-SUFFIX,emby-us-v4.mius.uk
+# FR-V6
+DOMAIN-SUFFIX,emby-fr-v6.mius.uk
 
 # tank
 # DOMAIN-SUFFIX,cs.tank88.top
