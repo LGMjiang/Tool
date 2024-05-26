@@ -16,6 +16,8 @@ DOMAIN-SUFFIX,ideapocket.com
 DOMAIN-SUFFIX,s1s1s1.com
 # SOD(SOFT ON DEMAND)
 DOMAIN-SUFFIX,sod.co.jp
+# av-event
+DOMAIN-SUFFIX,av-event.jp
 # ABV
 DOMAIN-SUFFIX,abv.jp
 # AKIBACOM
