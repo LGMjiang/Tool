@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 9:00 2024/6/7
+# last updated: 9:41 2024/6/7
 #
 # ================
 
@@ -177,27 +177,30 @@ rule-providers:
 
   # Twitter
   Twitter: {<<: *c, format: text, path: ./rule-providers/Twitter.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Twitter/Twitter.list}
-  
+
   # Instagram
   Instagram: {<<: *c, format: text, path: ./rule-providers/Instagram.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Instagram/Instagram.list}
-  
+
   # Discord
   Discord: {<<: *c, format: text, path: ./rule-providers/Discord.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Discord/Discord.list}
-  
+
   # Facebook
   Facebook: {<<: *c, format: text, path: ./rule-providers/Facebook.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Facebook/Facebook.list}
-  
+
   # Reddit
   Reddit: {<<: *c, format: text, path: ./rule-providers/Reddit.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Reddit/Reddit.list}
-  
+
   # Pixiv
   Pixiv: {<<: *c, format: text, path: ./rule-providers/Pixiv.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Pixiv/Pixiv.list}
-  
+
   # P
   P: {<<: *c, format: text, path: ./rule-providers/P.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/P.list}
-  
+
   # PJ
   PJ: {<<: *c, format: text, path: ./rule-providers/PJ.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/PJ.list}
+
+  # EH
+  EH: {<<: *c, format: text, path: ./rule-providers/EH.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/EH.list}
 
   # Game
   Steam: {<<: *c, format: text, path: ./rule-providers/Steam.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Steam.list}
@@ -233,7 +236,8 @@ rules:
   - RULE-SET,Pixiv,Pixiv
   - RULE-SET,Reddit,Reddit
   - RULE-SET,P,Proxy
-  - RULE-SET,PJ,Proxy
+  - RULE-SET,PJ,Japan
+  - RULE-SET,EH,OpenAI
   - RULE-SET,OpenAI,OpenAI
   - RULE-SET,Steam,Game
   - RULE-SET,Epic,Game
