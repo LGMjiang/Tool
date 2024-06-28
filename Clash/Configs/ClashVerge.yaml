@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 9:41 2024/6/7
+# last updated: 8:39 2024/6/28
 #
 # ================
 
@@ -10,7 +10,7 @@ mixed-port: 7897
 tcp-concurrent: true
 # 允许局域网的连接（可用来共享代理）
 allow-lan: false
-# 开启 IPv6 总开关，关闭阻断所有 IPv6 链接和屏蔽 DNS 请求 AAAA 记录  
+# 开启 IPv6 总开关，关闭阻断所有 IPv6 链接和屏蔽 DNS 请求 AAAA 记录
 ipv6: false
 # 规则模式：rule/global/direct/script
 mode: rule
@@ -196,6 +196,9 @@ rule-providers:
   # P
   P: {<<: *c, format: text, path: ./rule-providers/P.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/P.list}
 
+  # DMM
+  DMM: {<<: *c, format: text, path: ./rule-providers/DMM.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/DMM/DMM.list}
+
   # PJ
   PJ: {<<: *c, format: text, path: ./rule-providers/PJ.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/PJ.list}
 
@@ -236,7 +239,9 @@ rules:
   - RULE-SET,Pixiv,Pixiv
   - RULE-SET,Reddit,Reddit
   - RULE-SET,P,Proxy
+  - RULE-SET,DMM,Japan
   - RULE-SET,PJ,Japan
+  - DOMAIN,cdn.up-timely.com,Japan
   - RULE-SET,EH,OpenAI
   - RULE-SET,OpenAI,OpenAI
   - RULE-SET,Steam,Game
