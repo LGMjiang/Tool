@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 8:39 2024/6/28
+# last updated: 21:17 2024/7/1
 #
 # ================
 
@@ -145,15 +145,15 @@ proxy-groups:
 
   #节点地区分组
 
-  - {name: Hong Kong, <<: *select, filter: "(?i)🇭🇰|香港|(\b(HK|Hong)\b)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png}
+  - {name: Hong Kong, <<: *fallback, filter: '^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png}
 
-  - {name: United States, <<: *select, filter: "(?i)🇺🇸|美国|洛杉矶|圣何塞|(\b(US|United States)\b)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png}
+  - {name: United States, <<: *fallback, filter: '^(?=.*((?i)🇺🇸|美国|(\b(US|USA|United States)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png}
 
-  - {name: Singapore, <<: *select, filter: "(?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png}
+  - {name: Singapore, <<: *fallback, filter: '^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png}
 
-  - {name: Japan, <<: *select, filter: "(?i)🇯🇵|日本|东京|(\b(JP|Japan)\b)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png}
+  - {name: Japan, <<: *fallback, filter: '^(?=.*((?i)🇯🇵|日本|(\b(JP|Japan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png}
 
-  - {name: Taiwan, <<: *select, filter: "(?i)🇨🇳|🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png}
+  - {name: Taiwan, <<: *fallback, filter: '^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png}
 
 rule-providers:
 
