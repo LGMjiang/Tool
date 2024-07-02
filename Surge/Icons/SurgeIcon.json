@@ -1,7 +1,7 @@
 {
     "name": "SurgeIcon",
     "icons": [
-     { "name": "Surge_Classical", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Surge.png"},
+     { "name": "Surge_Classical", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Surge_Classical.png"},
      { "name": "Surge_Inky", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Surge_Inky.png"},
      { "name": "Surge_Dark", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Surge_Dark.png"},
      { "name": "Surge5", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Surge5.png"},
