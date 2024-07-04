@@ -249,7 +249,10 @@ rules:
   - RULE-SET,Emby,Emby
   - RULE-SET,Apple,Apple
   - RULE-SET,StreamMedia,StreamMedia
+  - DOMAIN-SUFFIX,op.gg,DIRECT
+  - DOMAIN,opgg-static.akamaized.net,DIRECT
   - RULE-SET,Global,Global
+  - DOMAIN-SUFFIX,250941.xyz,DIRECT
   - RULE-SET,ChinaDomain,DIRECT
   - RULE-SET,Lan,DIRECT
   - GEOIP,CN,DIRECT
