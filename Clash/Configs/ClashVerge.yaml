@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 21:17 2024/7/1
+# last updated: 16:57 2024/7/5
 #
 # ================
 
@@ -131,6 +131,8 @@ proxy-groups:
 
   - {name: OpenAI, <<: *pg, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png}
 
+  - {name: TikTok, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png}
+
   - {name: Apple, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png}
 
   - {name: Global, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png}
@@ -212,6 +214,9 @@ rule-providers:
   # OpenAI
   OpenAI: {<<: *c, format: text, path: ./rule-providers/OpenAI.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/OpenAI/OpenAI.list}
 
+  # TikTok
+  TikTok: {<<: *c, format: text, path: ./rule-providers/TikTok.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/TikTok/TikTok.list}
+
   # CNDomain
   ChinaDomain: {<<: *c, format: text, path: ./rule-providers/ChinaDomain.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ChinaDomain.list}
 
@@ -244,6 +249,7 @@ rules:
   - DOMAIN,cdn.up-timely.com,Japan
   - RULE-SET,EH,OpenAI
   - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,TikTok,TikTok
   - RULE-SET,Steam,Game
   - RULE-SET,Epic,Game
   - RULE-SET,Emby,Emby
