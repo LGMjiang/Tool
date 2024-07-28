@@ -1,16 +1,11 @@
 # misakaf
-DOMAIN-SUFFIX,emby.misakaf.org
-DOMAIN-SUFFIX,stream1.misakaf.org
-DOMAIN-SUFFIX,stream2.misakaf.org
-DOMAIN-SUFFIX,stream3.misakaf.org
+DOMAIN-SUFFIX,misakaf.org
 
 # 终点站
-DOMAIN-SUFFIX,pub1.emby.wtf
-DOMAIN-SUFFIX,pub2.emby.wtf
-DOMAIN-SUFFIX,pub3.emby.wtf
+DOMAIN-SUFFIX,emby.wtf
 
 # pronemby
-DOMAIN-SUFFIX,pornemby.com
+# DOMAIN-SUFFIX,pornemby.com
 
 # singularity
 # DOMAIN-SUFFIX,singularity.deja-vu.beauty
@@ -37,18 +32,7 @@ DOMAIN-SUFFIX,film.ohhhh.org
 # DOMAIN-SUFFIX,ju.dog
 
 # Paul电报服
-# cf线路,可以加https访问
-DOMAIN-SUFFIX,cf.imetyou.top
-# 随机线路
-DOMAIN-SUFFIX,emby.imetyou.top
-# 落地机线路
-DOMAIN-SUFFIX,fk.imetyou.top
-# 首尔中转
-DOMAIN-SUFFIX,kr.imetyou.top
-# 新加坡中转
-DOMAIN-SUFFIX,sg.imetyou.top
-# 春川中转
-DOMAIN-SUFFIX,chun.imetyou.top
+DOMAIN-SUFFIX,imetyou.top
 
 # emby hub
 # DOMAIN-SUFFIX,emby.ednovas.org
@@ -63,10 +47,7 @@ DOMAIN-SUFFIX,789.123456.al
 # DOMAIN-SUFFIX,emby.mius.uk
 
 # 牢大的野兽餐厅
-# US-V4
-DOMAIN-SUFFIX,emby-us-v4.mius.uk
-# FR-V6
-DOMAIN-SUFFIX,emby-fr-v6.mius.uk
+DOMAIN-SUFFIX,mius.uk
 
 # tank
 # DOMAIN-SUFFIX,cs.tank88.top
@@ -93,5 +74,4 @@ DOMAIN-SUFFIX,emby.aca.best
 DOMAIN-SUFFIX,porn.aca.best
 
 # 江湖
-DOMAIN-SUFFIX,jh.reddust.link
-DOMAIN-SUFFIX,film.reddust.link
+DOMAIN-SUFFIX,reddust.link
