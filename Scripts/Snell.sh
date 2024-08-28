@@ -16,7 +16,7 @@ done
 
 # 从官方网站获取最新版本号
 latest_version=$(curl -s https://manual.nssurge.com/others/snell.html | grep -oP 'snell-server-\K[^\-]+' | head -1)
-current_version="v4.1.0b1"
+current_version=$(snell-server -v 2>&1 | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+')
 
 snell_version=${latest_version:-$current_version}
 
