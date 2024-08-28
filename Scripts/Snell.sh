@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# last updated: 2024/8/27 18:12
-
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
   echo "请切换到 root 用户后再运行脚本"
@@ -44,6 +42,7 @@ uninstall_snell() {
   rm -f /etc/snell/snell-server.conf
   rm -f /usr/local/bin/snell-server
   echo "Snell 已卸载"
+  before_show_menu
 }
 
 # 更新 Snell 函数
@@ -56,48 +55,46 @@ update_snell() {
   rm snell-server-${snell_version}-linux-${snell_type}.zip
   systemctl restart snell.service || { echo "无法重启 Snell 服务"; exit 1; }
   echo "Snell 已更新到版本 ${snell_version}"
+  before_show_menu
 }
 
-# 判断输入的参数
-if [[ $1 == "uninstall" ]]; then
-  uninstall_snell
-  exit 0
-fi
-
-if [[ $1 == "update" ]]; then
+# 检查是否需要更新
+check_update() {
   if [[ "$current_version" != "$snell_version" ]]; then
     update_snell
   else
     echo "当前已是最新版本 (${current_version})，无需更新"
+    before_show_menu
   fi
-  exit 0
-fi
+}
 
-# 获取用户输入的配置信息
-read -r -p "请输入 Snell 监听端口 (留空默认随机端口号): " snell_port
-snell_port=${snell_port:-$(shuf -i 1024-65535 -n 1)}
+# 安装 Snell 函数
+install_snell() {
+  # 获取用户输入的配置信息
+  read -r -p "请输入 Snell 监听端口 (留空默认随机端口号): " snell_port
+  snell_port=${snell_port:-$(shuf -i 1024-65535 -n 1)}
 
-read -r -p "请输入 Snell 密码 (留空随机生成): " snell_password
-if [[ -z "$snell_password" ]]; then
-  snell_password=$(openssl rand -base64 32)
-fi
+  read -r -p "请输入 Snell 密码 (留空随机生成): " snell_password
+  if [[ -z "$snell_password" ]]; then
+    snell_password=$(openssl rand -base64 32)
+  fi
 
-read -r -p "是否开启 HTTP 混淆 (Y/N 默认不开启): " enable_http_obfs
-if [[ ${enable_http_obfs,,} == "y" ]]; then
-  snell_obfs="http"
-else
-  snell_obfs="off"
-fi
+  read -r -p "是否开启 HTTP 混淆 (Y/N 默认不开启): " enable_http_obfs
+  if [[ ${enable_http_obfs,,} == "y" ]]; then
+    snell_obfs="http"
+  else
+    snell_obfs="off"
+  fi
 
-read -r -p "是否开启 ipv6 混淆 (Y/N 默认不开启): " snell_ipv6
+read -r -p "是否开启 ipv6 (Y/N 默认不开启): " snell_ipv6
 if [[ ${snell_ipv6,,} == "y" ]]; then
   snell_ipv6="true"
 else
   snell_ipv6="false"
 fi
 
-# 显示配置信息
-cat <<EOF
+  # 显示配置信息
+  cat <<EOF
 请确认以下配置信息：
 端口：${snell_port}
 密码：${snell_password}
@@ -105,26 +102,25 @@ cat <<EOF
 ipv6：${snell_ipv6}
 EOF
 
-read -r -p "确认无误？(Y/N) " confirm
-case "$confirm" in
-  [yY])
-    echo "开始安装进行安装"
-  ;;
-  *)
-    echo "已取消安装"
-    exit 0
-    ;;
-esac
+  read -r -p "确认无误？(Y/N) " confirm
+  case "$confirm" in
+    [yY]) ;;
+    *)
+      echo "已取消安装"
+      before_show_menu
+      return
+      ;;
+  esac
 
-# 下载 Snell
-wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${snell_version}-linux-${snell_type}.zip
-unzip snell-server-${snell_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
-mv snell-server /usr/local/bin/snell-server || { echo "移动文件失败"; exit 1; }
-chmod +x /usr/local/bin/snell-server
-rm snell-server-${snell_version}-linux-${snell_type}.zip
+  # 下载并安装 Snell
+  wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${snell_version}-linux-${snell_type}.zip
+  unzip snell-server-${snell_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
+  mv snell-server /usr/local/bin/snell-server || { echo "移动文件失败"; exit 1; }
+  chmod +x /usr/local/bin/snell-server
+  rm snell-server-${snell_version}-linux-${snell_type}.zip
 
-# 创建 Systemd 服务文件
-cat > /lib/systemd/system/snell.service <<EOF
+  # 创建 Systemd 服务文件
+  cat > /lib/systemd/system/snell.service <<EOF
 [Unit]
 Description=Snell Proxy Service
 After=network.target
@@ -143,23 +139,65 @@ SyslogIdentifier=snell-server
 WantedBy=multi-user.target
 EOF
 
-# 创建 Snell 配置文件
-cat > /etc/snell/snell-server.conf <<EOF
+  # 创建 Snell 配置文件
+  cat > /etc/snell/snell-server.conf <<EOF
 [snell-server]
 listen = 0.0.0.0:${snell_port}
 psk = ${snell_password}
-ipv6 = ${snell_ipv6}
+ipv6 = false
 obfs = ${snell_obfs}
 EOF
 
-# 启动并启用 Snell 服务
-systemctl daemon-reload || { echo "无法重载 daemon"; exit 1; }
-systemctl start snell.service || { echo "无法启动 Snell 服务"; exit 1; }
-systemctl enable snell.service || { echo "无法设置开机自启"; exit 1; }
+  # 启动并启用 Snell 服务
+  systemctl daemon-reload || { echo "无法重载 daemon"; exit 1; }
+  systemctl start snell.service || { echo "无法启动 Snell 服务"; exit 1; }
+  systemctl enable snell.service || { echo "无法设置开机自启"; exit 1; }
 
-echo "Snell 安装成功，版本: ${snell_version}"
-echo "客户端连接信息: "
-echo "端口: ${snell_port}"
-echo "密码: ${snell_password}"
-echo "混淆: ${snell_obfs}"
-echo "ipv6：${snell_ipv6}"
+  echo "Snell 安装成功，版本: ${snell_version}"
+  echo "客户端连接信息: "
+  echo "端口: ${snell_port}"
+  echo "密码: ${snell_password}"
+  echo "混淆: ${snell_obfs}"
+  echo "ipv6：${snell_ipv6}"
+  before_show_menu
+}
+
+# 显示菜单前的等待函数
+before_show_menu() {
+    echo && printf "* 按回车返回主菜单 *" && read temp
+    show_menu
+}
+
+# 显示菜单
+show_menu() {
+    printf "
+    Snell 管理脚本
+    --------------------------
+    1. 安装 Snell
+    2. 更新 Snell
+    3. 卸载 Snell
+    0. 退出脚本
+    "
+    echo && printf "请输入选择 [0-3]: " && read -r num
+    case "${num}" in
+        0)
+            exit 0
+            ;;
+        1)
+            install_snell
+            ;;
+        2)
+            check_update
+            ;;
+        3)
+            uninstall_snell
+            ;;
+        *)
+            echo "请输入正确的数字 [0-3]"
+            show_menu
+            ;;
+    esac
+}
+
+# 启动菜单
+show_menu
