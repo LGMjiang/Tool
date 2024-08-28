@@ -170,6 +170,7 @@ before_show_menu() {
 
 # 显示菜单
 show_menu() {
+    clear
     printf "
     Snell 管理脚本
     --------------------------
