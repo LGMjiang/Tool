@@ -5,16 +5,7 @@ DOMAIN-SUFFIX,misakaf.org
 DOMAIN-SUFFIX,emby.wtf
 
 # pronemby
-# DOMAIN-SUFFIX,pornemby.com
-
-# singularity
-# DOMAIN-SUFFIX,singularity.deja-vu.beauty
-
-# 佛系
-# DOMAIN-SUFFIX,1.4545.cf
-
-# infinityfly
-# DOMAIN-SUFFIX,vx.infinityfly.top
+DOMAIN-SUFFIX,pornemby.com
 
 # 放映厅
 DOMAIN-SUFFIX,emby.9191001.xyz
@@ -25,17 +16,8 @@ DOMAIN-SUFFIX,embyplus.org
 # nmemby
 DOMAIN-SUFFIX,film.ohhhh.org
 
-# 私人影院
-# DOMAIN-SUFFIX,emby.agon.cf
-
-# 剧狗
-# DOMAIN-SUFFIX,ju.dog
-
 # Paul电报服
 DOMAIN-SUFFIX,imetyou.top
-
-# emby hub
-# DOMAIN-SUFFIX,emby.ednovas.org
 
 # 星光(尘烬)
 DOMAIN-SUFFIX,free.emby.eu.org
@@ -43,26 +25,11 @@ DOMAIN-SUFFIX,free.emby.eu.org
 # TreeDiagram
 DOMAIN-SUFFIX,789.123456.al
 
-# 会员制emby餐厅
-# DOMAIN-SUFFIX,emby.mius.uk
-
 # 牢大的野兽餐厅
 DOMAIN-SUFFIX,mius.uk
 
-# tank
-# DOMAIN-SUFFIX,cs.tank88.top
-
-# hxd
-# DOMAIN-SUFFIX,usa.bili.rip
-
-# Dolphin
-# DOMAIN-SUFFIX,public.emby.ws
-
 # 叔服
-# DOMAIN-SUFFIX,emby3.mcjoker.xyz
-
-# 酷安emby
-# DOMAIN-SUFFIX,140.238.6.215
+DOMAIN-SUFFIX,emby3.mcjoker.xyz
 
 # 卷毛鼠
 DOMAIN-SUFFIX,cf.jmsooo.com
@@ -72,6 +39,3 @@ DOMAIN-SUFFIX,emby.aca.best
 
 # ACA Porn
 DOMAIN-SUFFIX,porn.aca.best
-
-# 江湖
-DOMAIN-SUFFIX,reddust.link
