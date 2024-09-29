@@ -1,8 +1,21 @@
 # misakaf
 DOMAIN-SUFFIX,misakaf.org
+DOMAIN-SUFFIX,stream1.misakaf.org
+DOMAIN-SUFFIX,stream2.misakaf.org
+DOMAIN-SUFFIX,stream3.misakaf.org
+DOMAIN-SUFFIX,stream4.misakaf.org
 
 # 终点站
 DOMAIN-SUFFIX,emby.wtf
+DOMAIN-SUFFIX,pub1.emby.wtf
+DOMAIN-SUFFIX,pub2.emby.wtf
+DOMAIN-SUFFIX,pub3.emby.wtf
+DOMAIN-SUFFIX,pub1cf.emby.wtf
+DOMAIN-SUFFIX,pub2cf.emby.wtf
+DOMAIN-SUFFIX,pub3cf.emby.wtf
+DOMAIN-SUFFIX,pub1back.emby.wtf
+DOMAIN-SUFFIX,pub2back.emby.wtf
+DOMAIN-SUFFIX,pub3back.emby.wtf
 
 # pronemby
 DOMAIN-SUFFIX,pornemby.com
@@ -14,28 +27,45 @@ DOMAIN-SUFFIX,emby.9191001.xyz
 DOMAIN-SUFFIX,embyplus.org
 
 # nmemby
-DOMAIN-SUFFIX,film.ohhhh.org
+DOMAIN-SUFFIX,ohhhh.org
 
 # Paul电报服
 DOMAIN-SUFFIX,imetyou.top
 
 # 星光(尘烬)
-DOMAIN-SUFFIX,free.emby.eu.org
+DOMAIN-SUFFIX,emby.eu.org
 
 # TreeDiagram
-DOMAIN-SUFFIX,789.123456.al
+DOMAIN-SUFFIX,123456.al
 
 # 牢大的野兽餐厅
 DOMAIN-SUFFIX,mius.uk
 
 # 叔服
-DOMAIN-SUFFIX,emby3.mcjoker.xyz
+DOMAIN-SUFFIX,mcjoker.xyz
 
 # 卷毛鼠
+DOMAIN-SUFFIX,jmsooo.com
 DOMAIN-SUFFIX,cf.jmsooo.com
+DOMAIN-SUFFIX,hk.jmsooo.com
+DOMAIN-SUFFIX,sg.jmsooo.com
+DOMAIN-SUFFIX,agahk1.jmsooo.com
+DOMAIN-SUFFIX,agasg1.jmsooo.com
+DOMAIN-SUFFIX,agajp1.jmsooo.com
+DOMAIN-SUFFIX,aws.jmsooo.com
+DOMAIN-SUFFIX,ntt1.jmsooo.com
+DOMAIN-SUFFIX,hinet.jmsooo.com
+DOMAIN-SUFFIX,cf1.jmsooo.com
 
 # ACA Emby
 DOMAIN-SUFFIX,emby.aca.best
 
 # ACA Porn
 DOMAIN-SUFFIX,porn.aca.best
+
+# 黑丝
+DOMAIN-SUFFIX,i109.com
+
+# 探花TV
+DOMAIN-SUFFIX,tanhuatv.site
+IP-CIDR,152.53.67.239/32,no-resolve
