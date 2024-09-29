@@ -13,5 +13,7 @@
      { "name": "Auto01", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/main/Icon/Policy-Filter/Auto01.png"},
      { "name": "Auto02", "url": "https://raw.githubusercontent.com/LGMjiang/Tools/main/Surge/Icons/Auto02.png"},
      { "name": "Outside", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/Outside.png"},
+     { "name": "final", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/final.png"},
+     { "name": "final01", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/final01.png"},
     ]
 }
