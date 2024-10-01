@@ -72,11 +72,11 @@ check_update() {
 install_snell() {
   # 获取用户输入的配置信息
   read -r -p "请输入 Snell 监听端口 (留空默认随机端口号): " snell_port
-  snell_port=${snell_port:-$(shuf -i 1024-65535 -n 1)}
+  snell_port=${snell_port:-$(shuf -i 1024-49151 -n 1)}
 
   read -r -p "请输入 Snell 密码 (留空随机生成): " snell_password
   if [[ -z "$snell_password" ]]; then
-    snell_password=$(openssl rand -base64 32)
+    snell_password=$(openssl rand -base64 24)
   fi
 
   read -r -p "是否开启 HTTP 混淆 (Y/N 默认不开启): " enable_http_obfs
