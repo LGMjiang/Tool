@@ -86,12 +86,12 @@ install_snell() {
     snell_obfs="off"
   fi
 
-read -r -p "是否开启 ipv6 (Y/N 默认不开启): " snell_ipv6
-if [[ ${snell_ipv6,,} == "y" ]]; then
-  snell_ipv6="true"
-else
-  snell_ipv6="false"
-fi
+  read -r -p "是否开启 ipv6 (Y/N 默认不开启): " snell_ipv6
+  if [[ ${snell_ipv6,,} == "y" ]]; then
+    snell_ipv6="true"
+  else
+    snell_ipv6="false"
+  fi
 
   # 显示配置信息
   cat <<EOF
@@ -144,7 +144,7 @@ EOF
 [snell-server]
 listen = 0.0.0.0:${snell_port}
 psk = ${snell_password}
-ipv6 = false
+ipv6 = ${snell_ipv6}
 obfs = ${snell_obfs}
 EOF
 
