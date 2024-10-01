@@ -127,12 +127,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=nobody
+User=root
 Group=nogroup
 LimitNOFILE=32768
 ExecStart=/usr/local/bin/snell-server -c /etc/snell/snell-server.conf
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=null
+StandardError=null
 SyslogIdentifier=snell-server
 
 [Install]
