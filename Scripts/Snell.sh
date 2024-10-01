@@ -140,6 +140,12 @@ WantedBy=multi-user.target
 EOF
 
   # 创建 Snell 配置文件
+  if [ ! -d "/etc/snell" ]; then
+    # 如果 /etc/snell 文件夹不存在，创建该文件夹
+      mkdir -p /etc/snell
+  fi
+
+  # 创建 Snell 配置文件
   cat > /etc/snell/snell-server.conf <<EOF
 [snell-server]
 listen = 0.0.0.0:${snell_port}
