@@ -72,7 +72,7 @@ check_update() {
 install_snell() {
   # 获取用户输入的配置信息
   read -r -p "请输入 Snell 监听端口 (留空默认随机端口号): " snell_port
-  snell_port=${snell_port:-$(shuf -i 1024-49151 -n 1)}
+  snell_port=${snell_port:-$(shuf -i 10000-30000 -n 1)}
 
   read -r -p "请输入 Snell 密码 (留空随机生成): " snell_password
   if [[ -z "$snell_password" ]]; then
