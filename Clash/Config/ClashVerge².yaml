@@ -130,9 +130,9 @@ proxy-groups:
   
   - {name: Google, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png}
 
-  - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tools/master/Clash/Icons/Pixiv.png}
+  - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Pixiv.png}
 
-  - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tools/master/Clash/Icons/Reddit.png}
+  - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Reddit.png}
 
   - {name: OneDrive, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/OneDrive.png}
 
@@ -207,16 +207,16 @@ rule-providers:
   Pixiv: {<<: *c, format: text, path: ./rule-providers/Pixiv.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Pixiv/Pixiv.list}
 
   # P
-  P: {<<: *c, format: text, path: ./rule-providers/P.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/P.list}
+  P: {<<: *c, format: text, path: ./rule-providers/P.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/P.list}
 
   # DMM
   DMM: {<<: *c, format: text, path: ./rule-providers/DMM.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/DMM/DMM.list}
 
   # PJ
-  PJ: {<<: *c, format: text, path: ./rule-providers/PJ.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/PJ.list}
+  PJ: {<<: *c, format: text, path: ./rule-providers/PJ.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/PJ.list}
 
   # EH
-  EH: {<<: *c, format: text, path: ./rule-providers/EH.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/EH.list}
+  EH: {<<: *c, format: text, path: ./rule-providers/EH.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/EH.list}
 
   # Game
   Steam: {<<: *c, format: text, path: ./rule-providers/Steam.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Steam.list}
@@ -232,7 +232,7 @@ rule-providers:
   ChinaDomain: {<<: *c, format: text, path: ./rule-providers/ChinaDomain.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ChinaDomain.list}
 
   # Emby
-  Emby: {<<: *c, format: text, path: ./rule-providers/Emby.list,  url: https://github.com/LGMjiang/Tools/raw/main/Surge/Rules/Emby.list}
+  Emby: {<<: *c, format: text, path: ./rule-providers/Emby.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/Emby.list}
 
   # Streaming
   StreamMedia: {<<: *c, format: text, path: ./rule-providers/StreamMedia.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ProxyMedia.list}
