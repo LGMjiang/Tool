@@ -1,0 +1,35 @@
+#!name=MyAdsBlock
+#!desc=自用去广告mini
+#!category=Ads
+
+[Rule]
+# pixiv - 作品底部广告
+DOMAIN,open-pixon.ads-pixiv.net,REJECT,pre-matching
+
+# > 番茄小说 去广告
+DOMAIN,dig.zjurl.cn,REJECT,extended-matching,pre-matching
+DOMAIN,dig.bdurl.net,REJECT,pre-matching
+AND,((DOMAIN-SUFFIX,zijieapi.com), (DOMAIN-KEYWORD,ad)),REJECT,pre-matching
+DOMAIN,is.snssdk.com,REJECT,pre-matching
+
+[URL Rewrite]
+# 配合stay去色花广告(只去.net的)
+^https:\/\/999bb222ww\.com - reject
+
+# 豆瓣去开屏
+^https:\/\/api\.douban\.com\/v2\/app_ads\/splash - reject
+
+# 中国移动 //client.app.coc.10086.cn
+^https:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/(explorePage\/getAdverList|init\/startInit) - reject
+
+# 有道翻译官去除搜索页内课程广告
+^https:\/\/oimage[a-z][\d]*\.ydstatic\.com\/image - reject
+# 有道翻译官去除开屏广告
+^https:\/\/qh-material\.taobao\.com\/dsp\/img - reject
+^https:\/\/gorgon\.youdao\.com\/gorgon - reject
+
+# pixiv - 底栏广告
+^https:\/\/d\.socdm\.com\/adsv\/ reject
+
+[MITM]
+hostname = %APPEND% client.app.coc.10086.cn, 999bb222ww.com, api.douban.com, qh-material.taobao.com,*.ydstatic.com,gorgon.youdao.com, d.socdm.com

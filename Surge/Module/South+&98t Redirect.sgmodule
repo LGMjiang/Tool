@@ -1,0 +1,13 @@
+#!name=South+&98t Redirect
+#!desc=重定向到一个域名来免登录
+#!system=ios
+#!category=Function Enhanced
+
+[URL Rewrite]
+# south+
+^https:\/\/[a-z]*\.?(south(?=-plus\.org)|(?<=\.)south|north|east|spring|summer|snow|white|level|least|soul|blue)-plus\.(net|org)\/(.*) https://south-plus.org/$3 302
+# 98t
+^https:\/\/[a-z]*\.?sehuatang\.org\/(.*) https://www.sehuatang.net/$1 302
+
+[MITM]
+hostname = %APPEND% south-plus.net,soul-plus.net,north-plus.net,white-plus.net,level-plus.net,summer-plus.net,spring-plus.net,snow-plus.net,east-plus.net,blue-plus.net,bbs.imoutolove.me,sehuatang.org,www.sehuatang.org
