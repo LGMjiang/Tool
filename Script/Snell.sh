@@ -114,35 +114,6 @@ EOF
 
   # 下载并安装 Snell
   wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${snell_version}-linux-${snell_type}.zip
-    # 检查 unzip 是否安装
-  if ! command -v unzip &> /dev/null; then
-      echo "unzip 未安装。"
-      read -p "是否要安装 unzip？(y/n): " choice
-      case "$choice" in
-          y|Y)
-              # 尝试安装 unzip
-              if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-                  # 针对 Debian/Ubuntu 系统
-                  sudo apt update && sudo apt install -y unzip
-              elif [[ "$OSTYPE" == "darwin"* ]]; then
-                  # 针对 macOS 系统
-                  brew install unzip
-              else
-                  echo "不支持的操作系统，无法自动安装 unzip。"
-                  exit 1
-              fi
-              ;;
-          n|N)
-              echo "用户选择不安装 unzip，退出。"
-              exit 1
-              ;;
-          *)
-              echo "无效的输入。退出。"
-              exit 1
-              ;;
-      esac
-  fi
-  # 解压安装
   unzip snell-server-${snell_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
   mv snell-server /usr/local/bin/snell-server || { echo "移动文件失败"; exit 1; }
   chmod +x /usr/local/bin/snell-server
