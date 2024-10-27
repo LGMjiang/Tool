@@ -15,5 +15,8 @@
      { "name": "Outside", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/Outside.png"},
      { "name": "final", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/final.png"},
      { "name": "final01", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/refs/heads/main/Icon/Policy-Filter/final01.png"},
+     { "name": "Global", "url": "https://raw.githubusercontent.com/Saw1g88/Saw/main/Icon/Quest_Global.png"},
+     { "name": "Magic", "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Magic.png"},
+     { "name": "FacMata", "url": "https://raw.githubusercontent.com/black2c7/TheMagic-Icons/main/Icons/Fm.png"},
     ]
 }
