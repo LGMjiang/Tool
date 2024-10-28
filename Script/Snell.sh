@@ -39,7 +39,7 @@ uninstall_snell() {
   systemctl stop snell.service || { echo "无法停止 Snell 服务"; exit 1; }
   systemctl disable snell.service || { echo "无法取消开机自启"; exit 1; }
   rm -f /lib/systemd/system/snell.service
-  rm -f /etc/snell/snell-server.conf
+  rm -rf /etc/snell
   rm -f /usr/local/bin/snell-server
   echo "Snell 已卸载"
   before_show_menu
@@ -142,7 +142,7 @@ EOF
   # 创建 Snell 配置文件
   if [ ! -d "/etc/snell" ]; then
     # 如果 /etc/snell 文件夹不存在，创建该文件夹
-      mkdir -p /etc/snell
+      mkdir /etc/snell
   fi
 
   # 创建 Snell 配置文件
