@@ -7,7 +7,7 @@
      { "name": "Surge_Dark", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/Surge_Dark.png"},
      { "name": "Surge5", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/Surge5.png"},
      { "name": "Surge_Enterprise", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/Surge_Enterprise.png"},
-     { "name": "ACA", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/ACA.png"},
+     { "name": "Surge_Rainbow", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/Surge_Rainbow.png"},
      { "name": "Surge_mini", "url": "https://raw.githubusercontent.com/Former-Years/icon/master/surge_mini.png"},
      { "name": "Surge_mini1", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/surge_mini1.png"},
      { "name": "Auto01", "url": "https://raw.githubusercontent.com/Jasonaax/Surge/main/Icon/Policy-Filter/Auto01.png"},
@@ -18,5 +18,6 @@
      { "name": "Global", "url": "https://raw.githubusercontent.com/Saw1g88/Saw/main/Icon/Quest_Global.png"},
      { "name": "Magic", "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Magic.png"},
      { "name": "FacMata", "url": "https://raw.githubusercontent.com/black2c7/TheMagic-Icons/main/Icons/Fm.png"},
+     { "name": "ACA", "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/ACA.png"},
     ]
 }
