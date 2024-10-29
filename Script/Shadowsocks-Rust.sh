@@ -8,7 +8,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # 检查必要工具是否安装
-for cmd in wget tar jq; do
+for cmd in wget tar curl; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd 未安装，请安装后再运行脚本"
     exit 1
@@ -16,8 +16,8 @@ for cmd in wget tar jq; do
 done
 
 # 获取最新版本号
-latest_version=$(curl -s https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest | jq -r .tag_name)
-current_version=$(ssserver -V 2>&1 | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
+latest_version=$(curl -m 10 -sL "https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest" | awk -F'"' '/tag_name/{print $4}')
+current_version="v$(ssserver -V 2>&1 | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')"
 
 # 检查系统架构
 case "$(uname -m)" in
