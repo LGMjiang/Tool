@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/10/28
+# last updated:2024/10/29
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
