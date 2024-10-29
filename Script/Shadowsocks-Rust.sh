@@ -17,7 +17,7 @@ done
 
 # 获取最新版本号
 latest_version=$(curl -s https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest | jq -r .tag_name)
-current_version=$(ssserver -v 2>&1 | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+')
+current_version=$(ssserver -V 2>&1 | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
 
 # 检查系统架构
 case "$(uname -m)" in
