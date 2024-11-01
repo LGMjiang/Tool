@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/10/29
+# last updated:2024/11/1
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -32,6 +32,16 @@ case "$(uname -m)" in
     exit 1
     ;;
 esac
+
+# 处理传入参数
+if [[ $1 == "uninstall" ]]; then
+  uninstall_ss
+  exit 0
+fi
+if [[ $1 == "update" ]]; then
+  check_update
+  exit 0
+fi
 
 # 更新 Shadowsocks-Rust 函数
 update_ss() {
