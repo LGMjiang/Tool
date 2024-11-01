@@ -51,6 +51,7 @@ update_ss() {
   mv -f ssserver /usr/local/bin/
   rm -f sslocal ssmanager ssservice ssurl
   chmod +x /usr/local/bin/ssserver
+  rm shadowsocks-${latest_version}.${ss_type}.tar.xz
   systemctl start ss-rust.service || { echo "无法重启 Shadowsocks-Rust 服务"; exit 1; }
   echo "Shadowsocks-Rust 已更新到版本 ${latest_version}"
   before_show_menu
@@ -150,6 +151,7 @@ EOF
   mv -f ssserver /usr/local/bin/
   rm -f sslocal ssmanager ssservice ssurl
   chmod +x /usr/local/bin/ssserver
+  rm shadowsocks-${latest_version}.${ss_type}.tar.xz
 
   # 创建 Systemd 服务文件
   cat > /lib/systemd/system/ss-rust.service << EOF
