@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/1
+# last updated:2024/11/2
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -44,6 +44,20 @@ if [[ $1 == "update" ]]; then
   check_update
   exit 0
 fi
+
+# 生成客户端配置
+generate_client_config() {
+  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  local obfs_param=""
+
+  # 根据 snell_obfs 的值设置 obfs_param
+  if [[ "${snell_obfs}" == "http" ]]; then
+    obfs_param=", obfs=http"
+  fi
+
+  # 输出配置
+  echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}"
+}
 
 # 卸载 Snell 函数
 uninstall_snell() {
@@ -176,6 +190,9 @@ EOF
   echo "密码: ${snell_password}"
   echo "混淆: ${snell_obfs}"
   echo "ipv6：${snell_ipv6}"
+  
+  generate_client_config
+  
   before_show_menu
 }
 
