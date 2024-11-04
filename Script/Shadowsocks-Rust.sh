@@ -206,16 +206,6 @@ uninstall_ss() {
 #     show_menu
 # }
 
-# 处理传入参数
-if [[ $1 == "uninstall" ]]; then
-  uninstall_ss
-  exit 0
-fi
-if [[ $1 == "update" ]]; then
-  update_ss
-  exit 0
-fi
-
 # 显示菜单
 show_menu() {
     clear
@@ -253,6 +243,16 @@ show_menu() {
             ;;
     esac
 }
+
+# 处理传入参数
+if [[ $1 == "uninstall" ]]; then
+  uninstall_ss
+  exit 0
+fi
+if [[ $1 == "update" ]]; then
+  update_ss
+  exit 0
+fi
 
 # 启动菜单
 show_menu
