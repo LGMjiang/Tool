@@ -45,8 +45,15 @@ generate_client_config() {
     obfs_param=", obfs=http"
   fi
 
+  # 选择是否开启 reuse
+  local reuse_param=""
+  read -r -p "是否开启 reuse (Y/N 默认不开启): " reuse_choice
+  if [[ ${reuse_choice} == "y" ]]; then
+    reuse_param=", reuse=true"
+  fi
+
   # 输出配置
-  echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}"
+  echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}"
 }
 
 # 卸载 Snell 函数
