@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/1
+# last updated:2024/11/4
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -36,16 +36,6 @@ case "$(uname -m)" in
     ;;
 esac
 
-# 处理传入参数
-if [[ $1 == "uninstall" ]]; then
-  uninstall_shadow_tls
-  exit 0
-fi
-if [[ $1 == "update" ]]; then
-  update_shadow_tls
-  exit 0
-fi
-
 # 卸载 Shadow-TLS 函数
 uninstall_shadow_tls() {
   systemctl stop shadow-tls.service || { echo "无法停止 Shadow-TLS 服务"; exit 1; }
@@ -53,14 +43,12 @@ uninstall_shadow_tls() {
   rm -f /lib/systemd/system/shadow-tls.service
   rm -f /usr/local/bin/shadow-tls
   echo "Shadow-TLS 已卸载"
-  before_show_menu
 }
 
 # 更新 Shadow-TLS 函数
 update_shadow_tls() {
   if [[ "$current_version" == "$latest_version" ]]; then
     echo "当前已是最新版本 (${current_version})，无需更新"
-    before_show_menu
     return
   fi
   
@@ -69,7 +57,6 @@ update_shadow_tls() {
   chmod +x /usr/local/bin/shadow-tls
   systemctl restart shadow-tls.service || { echo "无法重启 Shadow-TLS 服务"; exit 1; }
   echo "Shadow-TLS 已更新到版本 ${latest_version}"
-  before_show_menu
 }
 
 # 安装 Shadow-TLS 函数
@@ -95,7 +82,6 @@ EOF
     [yY]) ;;
     *)
       echo "已取消安装"
-      before_show_menu
       return
       ;;
   esac
@@ -137,14 +123,13 @@ EOF
   echo "客户端连接信息: "
   echo "端口: ${shadow_tls_port}"
   echo "密码: ${shadow_tls_password}"
-  before_show_menu
 }
 
 # 显示菜单前的等待函数
-before_show_menu() {
-    echo && printf "* 按回车返回主菜单 *" && read temp
-    show_menu
-}
+# before_show_menu() {
+#     echo && printf "* 按回车返回主菜单 *" && read temp
+#     show_menu
+# }
 
 # 显示菜单
 show_menu() {
@@ -164,12 +149,18 @@ show_menu() {
             ;;
         1)
             install_shadow_tls
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         2)
             update_shadow_tls
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         3)
             uninstall_shadow_tls
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         *)
             echo "请输入正确的数字 [0-3]"
@@ -177,6 +168,16 @@ show_menu() {
             ;;
     esac
 }
+
+# 处理传入参数
+if [[ $1 == "uninstall" ]]; then
+  uninstall_shadow_tls
+  exit 0
+fi
+if [[ $1 == "update" ]]; then
+  update_shadow_tls
+  exit 0
+fi
 
 # 启动菜单
 show_menu
