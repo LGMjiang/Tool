@@ -186,6 +186,12 @@ EOF
   before_show_menu
 }
 
+# 显示菜单前的等待函数
+before_show_menu() {
+    echo && printf "* 按回车返回主菜单 *" && read temp
+    show_menu
+}
+
 # 处理传入参数
 if [[ $1 == "uninstall" ]]; then
   uninstall_snell
@@ -195,12 +201,6 @@ if [[ $1 == "update" ]]; then
   check_update
   exit 0
 fi
-
-# 显示菜单前的等待函数
-before_show_menu() {
-    echo && printf "* 按回车返回主菜单 *" && read temp
-    show_menu
-}
 
 # 显示菜单
 show_menu() {
