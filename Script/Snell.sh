@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/2
+# last updated:2024/11/4
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -34,16 +34,6 @@ case "$(uname -m)" in
     exit 1
     ;;
 esac
-
-# 处理传入参数
-if [[ $1 == "uninstall" ]]; then
-  uninstall_snell
-  exit 0
-fi
-if [[ $1 == "update" ]]; then
-  check_update
-  exit 0
-fi
 
 # 生成客户端配置
 generate_client_config() {
@@ -195,6 +185,16 @@ EOF
   
   before_show_menu
 }
+
+# 处理传入参数
+if [[ $1 == "uninstall" ]]; then
+  uninstall_snell
+  exit 0
+fi
+if [[ $1 == "update" ]]; then
+  check_update
+  exit 0
+fi
 
 # 显示菜单前的等待函数
 before_show_menu() {
