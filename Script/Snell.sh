@@ -19,7 +19,7 @@ done
 latest_version=$(curl -s https://manual.nssurge.com/others/snell.html | grep -oP 'snell-server-\K[^\-]+' | head -1)
 current_version=$(snell-server -v 2>&1 | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+')
 
-snell_version=${latest_version:-$current_version}
+#snell_version=${latest_version:-$current_version}
 
 # 检查系统架构
 case "$(uname -m)" in
@@ -57,31 +57,34 @@ uninstall_snell() {
   rm -rf /etc/snell
   rm -f /usr/local/bin/snell-server
   echo "Snell 已卸载"
-  before_show_menu
 }
 
 # 更新 Snell 函数
 update_snell() {
+  if [[ "$current_version" == "$latest_version" ]]; then
+    echo "当前已是最新版本 (${current_version})，无需更新"
+    return
+  fi
+
   systemctl stop snell.service || { echo "无法停止 Snell 服务"; exit 1; }
-  wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${snell_version}-linux-${snell_type}.zip
-  unzip snell-server-${snell_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
+  wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${latest_version}-linux-${snell_type}.zip
+  unzip snell-server-${latest_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
   mv snell-server /usr/local/bin/snell-server || { echo "移动文件失败"; exit 1; }
   chmod +x /usr/local/bin/snell-server
-  rm snell-server-${snell_version}-linux-${snell_type}.zip
+  rm snell-server-${latest_version}-linux-${snell_type}.zip
   systemctl restart snell.service || { echo "无法重启 Snell 服务"; exit 1; }
-  echo "Snell 已更新到版本 ${snell_version}"
-  before_show_menu
+  echo "Snell 已更新到版本 ${latest_version}"
 }
 
 # 检查是否需要更新
-check_update() {
-  if [[ "$current_version" != "$snell_version" ]]; then
-    update_snell
-  else
-    echo "当前已是最新版本 (${current_version})，无需更新"
-    before_show_menu
-  fi
-}
+# check_update() {
+#   if [[ "$current_version" != "$snell_version" ]]; then
+#     update_snell
+#   else
+#     echo "当前已是最新版本 (${current_version})，无需更新"
+#     before_show_menu
+#   fi
+# }
 
 # 安装 Snell 函数
 install_snell() {
@@ -122,17 +125,16 @@ EOF
     [yY]) ;;
     *)
       echo "已取消安装"
-      before_show_menu
       return
       ;;
   esac
 
   # 下载并安装 Snell
-  wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${snell_version}-linux-${snell_type}.zip
-  unzip snell-server-${snell_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
+  wget -N --no-check-certificate https://dl.nssurge.com/snell/snell-server-${latest_version}-linux-${snell_type}.zip
+  unzip snell-server-${latest_version}-linux-${snell_type}.zip || { echo "解压失败"; exit 1; }
   mv snell-server /usr/local/bin/snell-server || { echo "移动文件失败"; exit 1; }
   chmod +x /usr/local/bin/snell-server
-  rm snell-server-${snell_version}-linux-${snell_type}.zip
+  rm snell-server-${latest_version}-linux-${snell_type}.zip
 
   # 创建 Systemd 服务文件
   cat > /lib/systemd/system/snell.service <<EOF
@@ -160,7 +162,6 @@ EOF
       mkdir /etc/snell
   fi
 
-  # 创建 Snell 配置文件
   cat > /etc/snell/snell-server.conf <<EOF
 [snell-server]
 listen = 0.0.0.0:${snell_port}
@@ -174,23 +175,21 @@ EOF
   systemctl start snell.service || { echo "无法启动 Snell 服务"; exit 1; }
   systemctl enable snell.service || { echo "无法设置开机自启"; exit 1; }
 
-  echo "Snell 安装成功，版本: ${snell_version}"
+  echo "Snell 安装成功，版本: ${latest_version}"
   echo "客户端连接信息: "
   echo "端口: ${snell_port}"
   echo "密码: ${snell_password}"
   echo "混淆: ${snell_obfs}"
   echo "ipv6：${snell_ipv6}"
-  
+
   generate_client_config
-  
-  before_show_menu
 }
 
 # 显示菜单前的等待函数
-before_show_menu() {
-    echo && printf "* 按回车返回主菜单 *" && read temp
-    show_menu
-}
+# before_show_menu() {
+#     echo && printf "* 按回车返回主菜单 *" && read temp
+#     show_menu
+# }
 
 # 显示菜单
 show_menu() {
@@ -210,12 +209,18 @@ show_menu() {
             ;;
         1)
             install_snell
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         2)
-            check_update
+            update_snell
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         3)
             uninstall_snell
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         *)
             echo "请输入正确的数字 [0-3]"
@@ -230,7 +235,7 @@ if [[ $1 == "uninstall" ]]; then
   exit 0
 fi
 if [[ $1 == "update" ]]; then
-  check_update
+  update_snell
   exit 0
 fi
 
