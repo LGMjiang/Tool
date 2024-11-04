@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/1
+# last updated:2024/11/4
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -33,18 +33,13 @@ case "$(uname -m)" in
     ;;
 esac
 
-# 处理传入参数
-if [[ $1 == "uninstall" ]]; then
-  uninstall_ss
-  exit 0
-fi
-if [[ $1 == "update" ]]; then
-  check_update
-  exit 0
-fi
-
 # 更新 Shadowsocks-Rust 函数
 update_ss() {
+  if [[ "$current_version" == "$latest_version" ]]; then
+    echo "当前已是最新版本 (${current_version})，无需更新"
+    return
+  fi
+
   systemctl stop ss-rust.service || { echo "无法停止 Shadowsocks-Rust 服务"; exit 1; }
   wget -N "https://github.com/shadowsocks/shadowsocks-rust/releases/download/${latest_version}/shadowsocks-${latest_version}.${ss_type}.tar.xz"
   tar -xvf "shadowsocks-${latest_version}.${ss_type}.tar.xz"
@@ -54,18 +49,17 @@ update_ss() {
   rm shadowsocks-${latest_version}.${ss_type}.tar.xz
   systemctl start ss-rust.service || { echo "无法重启 Shadowsocks-Rust 服务"; exit 1; }
   echo "Shadowsocks-Rust 已更新到版本 ${latest_version}"
-  before_show_menu
 }
 
 # 检查是否需要更新
-check_update() {
-  if [[ "$current_version" != "$latest_version" ]]; then
-    update_ss
-  else
-    echo "当前已是最新版本 (${current_version})，无需更新"
-    before_show_menu
-  fi
-}
+# check_update() {
+#   if [[ "$current_version" != "$latest_version" ]]; then
+#     update_ss
+#   else
+#     echo "当前已是最新版本 (${current_version})，无需更新"
+#     before_show_menu
+#   fi
+# }
 
 # 安装 Shadowsocks-Rust 函数
 install_ss() {
@@ -140,7 +134,6 @@ EOF
     [yY]) ;;
     *)
       echo "已取消安装"
-      before_show_menu
       return
       ;;
   esac
@@ -195,7 +188,6 @@ EOF
   systemctl enable ss-rust.service || { echo "无法设置开机自启"; exit 1; }
 
   echo "Shadowsocks-Rust 安装成功，版本: ${latest_version}"
-  before_show_menu
 }
 
 # 卸载 Shadowsocks-Rust 函数
@@ -206,14 +198,23 @@ uninstall_ss() {
   rm -rf /etc/ss-rust
   rm -f /usr/local/bin/ssserver
   echo "Shadowsocks-Rust 已卸载"
-  before_show_menu
 }
 
 # 显示菜单前的等待函数
-before_show_menu() {
-    echo && printf "* 按回车返回主菜单 *" && read temp
-    show_menu
-}
+# before_show_menu() {
+#     echo && printf "* 按回车返回主菜单 *" && read temp
+#     show_menu
+# }
+
+# 处理传入参数
+if [[ $1 == "uninstall" ]]; then
+  uninstall_ss
+  exit 0
+fi
+if [[ $1 == "update" ]]; then
+  update_ss
+  exit 0
+fi
 
 # 显示菜单
 show_menu() {
@@ -233,12 +234,18 @@ show_menu() {
             ;;
         1)
             install_ss
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         2)
-            check_update
+            update_ss
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         3)
             uninstall_ss
+            echo && printf "* 按回车返回主菜单 *" && read temp
+            show_menu
             ;;
         *)
             echo "请输入正确的数字 [0-3]"
