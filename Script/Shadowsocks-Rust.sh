@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/4
+# last updated:2024/11/5
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -32,6 +32,23 @@ case "$(uname -m)" in
     exit 1
     ;;
 esac
+
+generate_client_config() {
+  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+
+  # 选择是否开启 udp-relay
+  local udp_relay_param=", udp-relay=true"
+  read -r -p "是否开启 udp-relay (Y/N 默认开启): " udp_relay_choice
+  if [[ ${udp_relay_choice} == "n" ]]; then
+    udp_relay_param=""
+  elif [[ ! ${ss_mode} =~ .*udp.* ]]; then
+    echo "开启udp-relay失败！"
+    echo "该配置未开启udp，请更改mode为tcp_and_udp或是udp_only！"
+  fi
+
+  # 输出配置
+  echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${udp_relay_param}"
+}
 
 # 更新 Shadowsocks-Rust 函数
 update_ss() {
@@ -188,6 +205,14 @@ EOF
   systemctl enable ss-rust.service || { echo "无法设置开机自启"; exit 1; }
 
   echo "Shadowsocks-Rust 安装成功，版本: ${latest_version}"
+  echo "客户端连接信息: "
+  echo "端口: ${ss_port}"
+  echo "密码: ${ss_password}"
+  echo "TFO: ${ss_tfo}"
+  echo "加密方法: ${encryption_method}"
+  echo "传输模式: ${ss_mode}"
+
+  generate_client_config
 }
 
 # 卸载 Shadowsocks-Rust 函数
