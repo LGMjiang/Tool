@@ -44,6 +44,7 @@ generate_client_config() {
   elif [[ ! ${ss_mode} =~ .*udp.* ]]; then
     echo "开启udp-relay失败！"
     echo "该配置未开启udp，请更改mode为tcp_and_udp或是udp_only！"
+    udp_relay_param=""
   fi
 
   # 输出配置
@@ -116,11 +117,10 @@ install_ss() {
   fi
 
   # 选择传输模式
-  echo "选择加密方法 (留空默认tcp_and_udp):"
   echo "1. tcp_and_udp (默认)"
   echo "2. tcp_only"
   echo "3. udp_only"
-  read -r -p "请选择加密方法 [1-3]: " mode_choice
+  read -r -p "请选择传输模式 [1-3] (留空默认tcp_and_udp): " mode_choice
 
   case $mode_choice in
     1) ss_mode="tcp_and_udp" ;;
