@@ -39,8 +39,11 @@ esac
 # 生成客户端配置 (目前只支持生成 ss-rust + stls)
 generate_client_config() {
   local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
-  local udp_port=""
-  local transmission_mode=""
+  local ss_port=""
+  local ss_transmission_mode=""
+  local ss_password=""
+  local encryption_method=""
+
 
   # 检查 Shadowsocks-Rust 的服务和配置文件
   if ! ssserver -V > /dev/null 2>&1; then
@@ -52,13 +55,27 @@ generate_client_config() {
     echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
     return
   else
-    udp_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
-    transmission_mode=$(grep '"mode"' /etc/ss-rust/config.json | sed 's/.*"mode": "\(.*\)",/\1/') # 获取 ss-rust 的传输模式
+    ss_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
+    ss_transmission_mode=$(grep '"mode"' /etc/ss-rust/config.json | sed 's/.*"mode": "\(.*\)",/\1/') # 获取 ss-rust 的传输模式
+    ss_password=$(grep '"password"' /etc/ss-rust/config.json | sed 's/.*"password": "\(.*\)",/\1/')
+    encryption_method=$(grep '"method"' /etc/ss-rust/config.json | sed 's/.*"method": "\(.*\)",/\1/')
   fi
 
-  # 处理 Surge 的 udp_port 参数
-  local surge_udp_port_param=", udp_port=${udp_port}"
-  if [[ ! ${transmission_mode} =~ .*udp.* ]]; then
+  # 选择是否开启 udp
+  local surge_udp_relay_param=", udp-relay=true"
+  local mihomo_udp_param="true"
+  local surge_udp_port_param=", udp_port=${ss_port}"
+  read -r -p "是否开启 udp (Y/N 默认开启): " udp_choice
+  if [[ ${udp_choice} == "n" ]]; then
+    surge_udp_relay_param=""
+    mihomo_udp_param="false"
+    surge_udp_port_param=""
+  elif [[ ! ${ss_transmission_mode} =~ .*udp.* ]]; then
+    echo "开启 udp 失败！"
+    echo "Surge udp-relay、udp-port 参数和 Mihomo Party udp 参数添加失败！"
+    echo "其 ss-rust 服务未开启 udp，请更改 mode 为 tcp_and_udp 或 udp_only！"
+    surge_udp_relay_param=""
+    mihomo_udp_param="false"
     surge_udp_port_param=""
   fi
 
@@ -74,29 +91,33 @@ generate_client_config() {
       # 输出 Surge 配置
       echo
       echo "Surge 客户端配置如下: "
-      echo "Shadow-TLS 端口号为: ${shadow_tls_port}"
-      echo ", shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+      echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
     ;;
     2)
       # 输出 Mihomo Party 配置
       echo
       cat << EOF
 Mihomo Party 客户端配置如下: 
-Shadow-TLS 端口号为: ${shadow_tls_port}
-plugin: shadow-tls
-client-fingerprint: chrome
-plugin-opts:
-  host: "gateway.icloud.com"
-  password: "${shadow_tls_password}"
-  version: 3
+- name: "name"
+  type: ss
+  server: ${server_ip}
+  port: ${shadow_tls_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: "gateway.icloud.com"
+    password: "${shadow_tls_password}"
+    version: 3
 EOF
     ;;
     *)
       echo
       echo "无效选择，默认自动输出 Surge 客户端配置！"
       echo "Surge 客户端配置如下: "
-      echo "Shadow-TLS 端口号为: ${shadow_tls_port}"
-      echo ", shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+      echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
     ;;
   esac
 }
