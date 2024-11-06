@@ -45,8 +45,9 @@ generate_client_config() {
     surge_udp_relay_param=""
     mihomo_udp_param="false"
   elif [[ ! ${ss_mode} =~ .*udp.* ]]; then
-    echo "开启 udp-relay 失败！"
-    echo "该配置未开启 udp，请更改 mode 为 tcp_and_udp 或是 udp_only！"
+    echo "开启 udp 失败！"
+    echo "Surge udp-relay 参数和 Mihomo Party udp 参数添加失败！"
+    echo "该配置未开启 udp，请更改 mode 为 tcp_and_udp 或 udp_only！"
     surge_udp_relay_param=""
     mihomo_udp_param="false"
   fi
