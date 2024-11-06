@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/5
+# last updated:2024/11/6
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -33,22 +33,59 @@ case "$(uname -m)" in
     ;;
 esac
 
+# 生成客户端配置
 generate_client_config() {
   local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
 
-  # 选择是否开启 udp-relay
-  local udp_relay_param=", udp-relay=true"
-  read -r -p "是否开启 udp-relay (Y/N 默认开启): " udp_relay_choice
-  if [[ ${udp_relay_choice} == "n" ]]; then
-    udp_relay_param=""
+  # 选择是否开启 udp
+  local surge_udp_relay_param=", udp-relay=true"
+  local mihomo_udp_param="true"
+  read -r -p "是否开启 udp (Y/N 默认开启): " udp_choice
+  if [[ ${udp_choice} == "n" ]]; then
+    surge_udp_relay_param=""
+    mihomo_udp_param="false"
   elif [[ ! ${ss_mode} =~ .*udp.* ]]; then
-    echo "开启 udp-relay 失败！"
-    echo "该配置未开启 udp，请更改 mode 为 tcp_and_udp 或是 udp_only！"
-    udp_relay_param=""
+    echo "开启udp-relay失败！"
+    echo "该配置未开启udp，请更改mode为tcp_and_udp或是udp_only！"
+    surge_udp_relay_param=""
+    mihomo_udp_param="false"
   fi
 
-  # 输出配置
-  echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${udp_relay_param}"
+  # 选择客户端
+  ehco
+  echo "选择要生成的客户端配置: "
+  echo "1. Surge (默认)"
+  echo "2. Mihomo Party"
+  read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
+
+  case $client_choice in
+    1)
+      # 输出 Surge 配置
+      echo
+      echo "Surge 客户端配置如下: "
+      echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}"
+    ;;
+    2)
+      # 输出 Mihomo Party 配置
+      echo
+      cat << EOF
+Mihomo Party 客户端配置如下: 
+- name: "name"
+  type: ss
+  server: ${server_ip}
+  port: ${ss_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+EOF
+    ;;
+    *)
+      echo
+      echo "无效选择，默认自动输出 Surge 客户端配置！"
+      echo "Surge 客户端配置如下: "
+      echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}"
+    ;;
+  esac
 }
 
 # 更新 Shadowsocks-Rust 函数
