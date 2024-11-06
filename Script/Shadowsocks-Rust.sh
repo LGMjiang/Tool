@@ -52,7 +52,7 @@ generate_client_config() {
   fi
 
   # 选择客户端
-  ehco
+  echo
   echo "选择要生成的客户端配置: "
   echo "1. Surge (默认)"
   echo "2. Mihomo Party"
