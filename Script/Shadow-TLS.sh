@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/4
+# last updated:2024/11/6
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -35,6 +35,71 @@ case "$(uname -m)" in
     exit 1
     ;;
 esac
+
+# 生成客户端配置 (目前只支持生成 ss-rust + stls)
+generate_client_config() {
+  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  local udp_port=""
+  local transmission_mode=""
+
+  # 检查 Shadowsocks-Rust 的服务和配置文件
+  if ! ssserver -V > /dev/null 2>&1; then
+    echo "无法生成 ss-rust + stls 的配置文件！"
+    echo "未检测到 Shadowsocks-Rust 服务！"
+    return
+  elif [[ ! -e /etc/ss-rust/config.json ]]; then
+    echo "无法生成 ss-rust + stls 的配置文件！"
+    echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
+    return
+  else
+    udp_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
+    transmission_mode=$(grep '"mode"' /etc/ss-rust/config.json | sed 's/.*"mode": "\(.*\)",/\1/') # 获取 ss-rust 的传输模式
+  fi
+
+  # 处理 Surge 的 udp_port 参数
+  local surge_udp_port_param=", udp_port=${udp_port}"
+  if [[ ! ${transmission_mode} =~ .*udp.* ]]; then
+    surge_udp_port_param=""
+  fi
+
+  # 选择客户端
+  echo
+  echo "选择要生成的客户端配置: "
+  echo "1. Surge (默认)"
+  echo "2. Mihomo Party"
+  read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
+
+  case $client_choice in
+    1)
+      # 输出 Surge 配置
+      echo
+      echo "Surge 客户端配置如下: "
+      echo "Shadow-TLS 端口号为: ${shadow_tls_port}"
+      echo ", shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+    ;;
+    2)
+      # 输出 Mihomo Party 配置
+      echo
+      cat << EOF
+Mihomo Party 客户端配置如下: 
+Shadow-TLS 端口号为: ${shadow_tls_port}
+plugin: shadow-tls
+client-fingerprint: chrome
+plugin-opts:
+  host: "gateway.icloud.com"
+  password: "${shadow_tls_password}"
+  version: 3
+EOF
+    ;;
+    *)
+      echo
+      echo "无效选择，默认自动输出 Surge 客户端配置！"
+      echo "Surge 客户端配置如下: "
+      echo "Shadow-TLS 端口号为: ${shadow_tls_port}"
+      echo ", shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+    ;;
+  esac
+}
 
 # 卸载 Shadow-TLS 函数
 uninstall_shadow_tls() {
@@ -123,6 +188,8 @@ EOF
   echo "客户端连接信息: "
   echo "端口: ${shadow_tls_port}"
   echo "密码: ${shadow_tls_password}"
+
+  generate_client_config
 }
 
 # 显示菜单前的等待函数
