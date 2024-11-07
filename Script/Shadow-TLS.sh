@@ -8,7 +8,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # 检查并自动安装必要工具
-for cmd in wget tar curl xz; do
+for cmd in wget curl; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd 未安装，正在安装..."
     
