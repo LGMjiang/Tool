@@ -13,14 +13,14 @@ for cmd in wget tar curl xz; do
     echo "$cmd 未安装，正在安装..."
     
     # 使用 apt 安装缺少的工具
-    sudo apt update
+    apt update
 
     # 对于 xz，确保安装 xz-utils
     if [ "$cmd" == "xz" ]; then
       cmd="xz-utils"
     fi
     
-    if ! sudo apt install -y $cmd; then
+    if ! apt install -y $cmd; then
       echo "$cmd 安装失败，请检查系统或网络连接。"
       exit 1
     fi
