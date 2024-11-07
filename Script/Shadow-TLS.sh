@@ -7,11 +7,17 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# 检查必要工具是否安装
-for cmd in wget curl; do
+# 检查并自动安装必要工具
+for cmd in wget tar curl xz; do
   if ! command -v $cmd &> /dev/null; then
-    echo "$cmd 未安装，请安装后再运行脚本"
-    exit 1
+    echo "$cmd 未安装，正在安装..."
+    
+    # 使用 apt 安装缺少的工具
+    apt update
+    if ! apt install -y $cmd; then
+      echo "$cmd 安装失败，请检查系统或网络连接。"
+      exit 1
+    fi
   fi
 done
 
