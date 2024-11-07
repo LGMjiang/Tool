@@ -13,13 +13,20 @@ for cmd in wget tar curl xz; do
     echo "$cmd 未安装，正在安装..."
     
     # 使用 apt 安装缺少的工具
-    apt update
-    if ! apt install -y $cmd; then
+    sudo apt update
+
+    # 对于 xz，确保安装 xz-utils
+    if [ "$cmd" == "xz" ]; then
+      cmd="xz-utils"
+    fi
+    
+    if ! sudo apt install -y $cmd; then
       echo "$cmd 安装失败，请检查系统或网络连接。"
       exit 1
     fi
   fi
 done
+
 
 # 获取最新版本号
 latest_version=$(curl -m 10 -sL "https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest" | awk -F'"' '/tag_name/{print $4}')
