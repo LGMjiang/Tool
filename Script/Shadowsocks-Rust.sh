@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/6
+# last updated:2024/11/7
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -54,8 +54,8 @@ generate_client_config() {
 
   # 选择客户端
   echo
-  echo "选择要生成的客户端配置: "
-  echo "1. Surge (默认)"
+  echo "选择要生成的客户端配置 (默认都生成): "
+  echo "1. Surge"
   echo "2. Mihomo Party"
   read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
 
@@ -82,9 +82,20 @@ EOF
     ;;
     *)
       echo
-      echo "无效选择，默认自动输出 Surge 客户端配置！"
+      echo "无效选择，默认自动输出所有客户端配置！"
       echo "Surge 客户端配置如下: "
       echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}"
+      echo
+      cat << EOF
+Mihomo Party 客户端配置如下: 
+- name: "name"
+  type: ss
+  server: ${server_ip}
+  port: ${ss_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+EOF
     ;;
   esac
 }
