@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/7
+# last updated:2024/11/9
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -42,22 +42,24 @@ case "$(uname -m)" in
     ;;
 esac
 
-# 生成客户端配置 (目前只支持生成 ss-rust + stls)
+# 生成客户端配置
 generate_client_config() {
   local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
   local ss_port=""
   local ss_transmission_mode=""
   local ss_password=""
   local encryption_method=""
-
+  local snell_port=""
+  local snell_psk=""
+  local snell_obfs=""
 
   # 检查 Shadowsocks-Rust 的服务和配置文件
   if ! ssserver -V > /dev/null 2>&1; then
-    echo "无法生成 ss-rust + stls 的配置文件！"
+    echo "无法生成 ss-rust + shadow-tls 的配置文件！"
     echo "未检测到 Shadowsocks-Rust 服务！"
     return
   elif [[ ! -e /etc/ss-rust/config.json ]]; then
-    echo "无法生成 ss-rust + stls 的配置文件！"
+    echo "无法生成 ss-rust + shadow-tls 的配置文件！"
     echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
     return
   else
@@ -65,6 +67,21 @@ generate_client_config() {
     ss_transmission_mode=$(grep '"mode"' /etc/ss-rust/config.json | sed 's/.*"mode": "\(.*\)",/\1/') # 获取 ss-rust 服务的传输模式
     ss_password=$(grep '"password"' /etc/ss-rust/config.json | sed 's/.*"password": "\(.*\)",/\1/') # 获取 ss-rust 服务的密码
     encryption_method=$(grep '"method"' /etc/ss-rust/config.json | sed 's/.*"method": "\(.*\)",/\1/') # 获取 ss-rust 服务的加密方式
+  fi
+
+  # 检查 Snell 的配置
+  if ! snell-server -v > /dev/null 2>&1; then
+    echo "无法生成 snell + shadow-tls 的配置文件！"
+    echo "未检测到 Snell 服务！"
+    return
+  elif [[ ! -e /etc/snell/snell-server.conf ]]; then
+    echo "无法生成 snell + shadow-tls 的配置文件！"
+    echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
+    return
+  else
+    snell_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
+    snell_psk=$(grep 'psk' /etc/snell/snell-server.conf | sed 's/psk = "\(.*\)"/\1/')  # 获取 Snell 的 PSK
+    snell_obfs=$(grep 'obfs' /etc/snell/snell-server.conf | sed 's/obfs = \(.*\)/\1/') # 获取 Snell 的 OBFS
   fi
 
   # 选择是否开启 udp
@@ -85,62 +102,94 @@ generate_client_config() {
     surge_udp_port_param=""
   fi
 
-  # 选择客户端
+  # 选择协议类型
   echo
-  echo "选择要生成的客户端配置 (默认都生成): "
-  echo "1. Surge"
-  echo "2. Mihomo Party"
-  read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
+  echo "选择要生成的协议类型: "
+  echo "1. ss-rust + shadow-tls"
+  echo "2. snell + shadow-tls"
+  read -r -p "请选择协议类型 [1-2]: " protocol_choice
 
-  case $client_choice in
+  case $protocol_choice in
     1)
-      # 输出 Surge 配置
+      # 根据协议选择客户端
       echo
-      echo "Surge 客户端配置如下: "
-      echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+      echo "选择要生成的客户端配置 (默认都生成): "
+      echo "1. Surge"
+      echo "2. Mihomo Party"
+      read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
+
+      # ss-rust + shadow-tls 配置
+      case $client_choice in
+        1)
+          echo
+          echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
+          echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+        ;;
+        2)
+          echo
+          cat << EOF
+Mihomo Party 客户端配置如下 (ss-rust + shadow-tls): 
+- name: "name"
+  type: ss
+  server: ${server_ip}
+  port: ${ss_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: "gateway.icloud.com"
+    password: "${shadow_tls_password}"
+    version: 3
+EOF
+        ;;
+        *)
+          echo
+          echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
+          echo "Surge 客户端配置如下: "
+          echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+          echo
+          cat << EOF
+Mihomo Party 客户端配置如下: 
+- name: "name"
+  type: ss
+  server: ${server_ip}
+  port: ${ss_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: "gateway.icloud.com"
+    password: "${shadow_tls_password}"
+    version: 3
+EOF
+        ;;
+      esac
     ;;
     2)
-      # 输出 Mihomo Party 配置
+      # snell + shadow-tls 配置
+
+      # 根据 snell_obfs 的值设置 obfs_param
+      if [[ "${snell_obfs}" == "http" ]]; then
+        obfs_param=", obfs=http"
+      fi
+
+      # 选择是否开启 reuse
+      local reuse_param=""
+      read -r -p "是否开启 reuse (Y/N 默认不开启): " reuse_choice
+      if [[ ${reuse_choice} == "y" ]]; then
+        reuse_param=", reuse=true"
+      fi
+
       echo
-      cat << EOF
-Mihomo Party 客户端配置如下: 
-- name: "name"
-  type: ss
-  server: ${server_ip}
-  port: ${shadow_tls_port}
-  cipher: ${encryption_method}
-  password: "${ss_password}"
-  udp: ${mihomo_udp_param}
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: "gateway.icloud.com"
-    password: "${shadow_tls_password}"
-    version: 3
-EOF
+      echo "Surge 客户端配置如下 (snell + shadow-tls): "
+      echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
     ;;
     *)
-      echo
-      echo "无效选择，默认自动输出所有客户端配置！"
-      echo "Surge 客户端配置如下: "
-      echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-      echo
-      cat << EOF
-Mihomo Party 客户端配置如下: 
-- name: "name"
-  type: ss
-  server: ${server_ip}
-  port: ${shadow_tls_port}
-  cipher: ${encryption_method}
-  password: "${ss_password}"
-  udp: ${mihomo_udp_param}
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: "gateway.icloud.com"
-    password: "${shadow_tls_password}"
-    version: 3
-EOF
+      echo "无效选择！请重新运行脚本并选择有效的协议类型。"
     ;;
   esac
 }
