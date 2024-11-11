@@ -97,12 +97,12 @@ i: &i {type: http, behavior: ipcidr, interval: 86400}
 proxies:
 - name: "Akile-hy2"
   type: hysteria2
-  server: server
-  port: 57896
-  password: pw
+  server: 
+  port: 
+  password: 
   up: "30 Mbps"
   down: "100 Mbps"
-  sni: server
+  sni: 
   skip-cert-verify: false
 
 proxy-providers:
