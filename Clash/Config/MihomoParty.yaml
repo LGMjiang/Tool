@@ -1,0 +1,385 @@
+# 基于@Repcz更改
+#
+# last updated: 2024/11/11
+#
+# ================
+
+# 混合端口 HTTP和SOCKS5用一个端口
+mixed-port: 7897
+# TCP 并发连接所有 IP, 将使用最快握手的 TCP
+tcp-concurrent: true
+# 允许局域网的连接（可用来共享代理）
+allow-lan: false
+# 开启 IPv6 总开关，关闭阻断所有 IPv6 链接和屏蔽 DNS 请求 AAAA 记录
+ipv6: false
+# 规则模式：rule/global/direct/script
+mode: rule
+# 设置日志输出级别: silent/error/warning/info/debug
+log-level: info
+# 全局 TLS 指纹
+global-client-fingerprint: chrome
+# 匹配所有进程（always/strict/off）
+find-process-mode: strict
+
+# 使用geoip.dat数据库
+geodata-mode: true
+geox-url:
+  geoip: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
+  geosite: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb"
+                         
+profile:
+  # 存储 select 选择记录
+  store-selected: true 
+  # 持久化 fake-ip
+  store-fake-ip: true  
+
+# 嗅探域名 可选配置
+sniffer:               
+  enable: true
+  # 是否使用嗅探结果作为实际访问，默认 true
+  parse-pure-ip: true  
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    QUIC:
+      ports: [443, 8443]
+
+# Tun 配置  
+tun:
+  enable: true
+  # 可选： system/gvisor/mixed；
+  stack: mixed
+  # dns劫持,一般设置为 any:53 即可, 即劫持所有53端口的udp流量
+  dns-hijack: [any:53]
+  # 自动设置全局路由，可以自动将全局流量路由进入tun网卡。
+  auto-route: true
+  # 自动识别出口网卡
+  auto-detect-interface: true
+        
+dns:
+  enable: true
+  # IPV6解析开关；如果为false，将返回ipv6结果为空
+  ipv6: false
+  # 模式：redir-host或fake-ip
+  enhanced-mode: fake-ip
+  # DNS监听地址
+  listen: 0.0.0.0:1053
+  # Fake-IP解析地址池
+  fake-ip-range: 198.18.0.1/16
+  # fakeip 过滤，以下地址不会下发 fakeip 映射用于连接
+  fake-ip-filter: ['*.lan','*.direct', cable.auth.com, '*.msftconnecttest.com', '*.msftncsi.com', network-test.debian.org, detectportal.firefox.com, resolver1.opendns.com, '*.srv.nintendo.net', '*.stun.playstation.net', xbox.*.microsoft.com, '*.xboxlive.com', stun.*, global.turn.twilio.com, global.stun.twilio.com, app.yinxiang.com, injections.adguard.org, local.adguard.org, cable.auth.com, localhost.*.qq.com, localhost.*.weixin.qq.com, '*.logon.battlenet.com.cn', '*.logon.battle.net', '*.blzstatic.cn', music.163.com, '*.music.163.com', '*.126.net', musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, '*.kuwo.cn', api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, '*.y.qq.com', streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, '*.xiami.com', '*.music.migu.cn', music.migu.cn, proxy.golang.org, '*.mcdn.bilivideo.cn', '*.cmpassport.com', id6.me, open.e.189.cn, mdn.open.wo.cn, opencloud.wostore.cn, auth.wosms.cn, '*.jegotrip.com.cn', '*.icitymobile.mobi', '*.pingan.com.cn', '*.cmbchina.com', '*.10099.com.cn', pool.ntp.org, '*.pool.ntp.org', ntp.*.com, time.*.com, 'ntp?.*.com', 'time?.*.com', time.*.gov, time.*.edu.cn, '*.ntp.org.cn', PDC._msDCS.*.*, DC._msDCS.*.*, GC._msDCS.*.*]
+  #默认的域名解析服务器
+  nameserver: [quic://223.5.5.5, quic://223.6.6.6, https://1.12.12.12/dns-query, https://120.53.53.53/dns-query]                     
+    
+# 策略组引用相关参数
+pg: &pg {type: select, proxies: [Proxy, Hong Kong, United States, Singapore, Japan, Taiwan, DIRECT]}
+# 订阅更新和延迟测试相关参数
+p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://latency-test.skk.moe/endpoint, interval: 1800}}
+# 自动选择策略组：选取延迟最低节点
+auto: &auto {type: url-test, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, tolerance: 50, include-all-providers: true}
+# 手动选择策略组：手动选择想要的节点/策略组
+select: &select {type: select, include-all-providers: true}
+# 故障回退策略组：策略组将按顺序选择你列表中第一个可用的节点
+fallback: &fallback {type: fallback, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+# 负载均衡策略组：不同的请求将使用不同的代理节点
+load-balance: &load-balance {type: load-balance, lazy: true, strategy: consistent-hashing, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+# classical规则相关
+c: &c {type: http, behavior: classical, interval: 86400}
+# domain规则相关
+d: &d {type: http, behavior: domain, interval: 86400}
+# ipcidr规则相关
+i: &i {type: http, behavior: ipcidr, interval: 86400}
+
+proxies:
+- name: "🇭🇰Akile HKSM hy2 🅑"
+  type: hysteria2
+  server: 
+  port: 
+  password: 
+  up: "30 Mbps"
+  down: "100 Mbps"
+  sni: 
+  skip-cert-verify: false
+
+- name: "🇭🇰Akile HKG 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇭🇰Akile HKSM 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇭🇰Claw 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇭🇰HKG-Claw 🅒"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  dialer-proxy: 🇭🇰Claw 🅑
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇭🇰HKSM-Claw 🅒"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  dialer-proxy: 🇭🇰Claw 🅑
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇯🇵Akile JPS 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇯🇵JPS-Claw 🅒"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  dialer-proxy: 🇭🇰Claw 🅑
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+proxy-providers:
+  Subscribe: {<<: *p, path: ./proxy-providers/Sub.yaml, url:}
+    # 在此将"http://your-service-provider"替换为你的机场订阅，推荐使用base64或者node list
+    # Sub-Store生成的链接,可以直接替换上述url引号中的部分,具体见Sub-Store教程         
+
+proxy-groups:
+
+  #分流分组
+
+  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰HKSM-Claw 🅒, 🇭🇰HKG-Claw 🅒, 🇭🇰Claw 🅑, 🇭🇰Akile HKSM 🅑, 🇭🇰Akile HKG 🅑, 🇭🇰Akile HKSM hy2, 🇯🇵JPS-Claw 🅒, 🇯🇵Akile JPS 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
+
+  - {name: Telegram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
+
+  - {name: Twitter, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png}
+
+  - {name: Instagram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png}
+
+  - {name: Facebook, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png}
+
+  - {name: Discord, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Discord.png}
+
+  - {name: YouTube, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png}
+  
+  - {name: Google, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png}
+
+  - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Pixiv.png}
+
+  - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Reddit.png}
+
+  - {name: OneDrive, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/OneDrive.png}
+
+  - {name: GitHub, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png}
+
+  - {name: Microsoft, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png}
+
+  - {name: OpenAI, <<: *pg, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png}
+
+  - {name: TikTok, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png}
+
+  - {name: Apple, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png}
+
+  - {name: Global, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png}
+
+  - {name: Game, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png}
+
+  - {name: Emby, type: select, proxies: [Proxy, DIRECT], include-all-providers: true, filter: '(Emby|EMBY)', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png}
+
+  - {name: StreamMedia, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Streaming.png}
+
+  - {name: Final, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color//Final.png}
+
+  #节点地区分组
+
+  - {name: Hong Kong, <<: *fallback, filter: '^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png}
+
+  - {name: United States, <<: *fallback, filter: '^(?=.*((?i)🇺🇸|美国|(\b(US|USA|United States)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png}
+
+  - {name: Singapore, <<: *fallback, filter: '^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png}
+
+  - {name: Japan, <<: *fallback, filter: '^(?=.*((?i)🇯🇵|日本|(\b(JP|Japan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png}
+
+  - {name: Taiwan, <<: *fallback, filter: '^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png}
+
+rule-providers:
+
+  # Lan
+  Lan: {<<: *c, format: text, path: ./rule-providers/Lan.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Lan.list}
+
+  # Apple Service
+  Apple: {<<: *c, format: text, path: ./rule-providers/Apple.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Apple/Apple.list}
+
+  # Microsoft Service
+  OneDrive: {<<: *c, format: text, path: ./rule-providers/OneDrive.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/OneDrive/OneDrive.list}
+  Github: {<<: *c, format: text, path: ./rule-providers/GitHub.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/GitHub/GitHub.list}
+  Microsoft: {<<: *c, format: text, path: ./rule-providers/Microsoft.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Microsoft/Microsoft.list}
+
+  # Google Service
+  YouTube: {<<: *c, format: text, path: ./rule-providers/YouTube.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/YouTube/YouTube.list}
+  Google: {<<: *c, format: text, path: ./rule-providers/Google.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Google/Google.list}
+
+  # Telegram
+  Telegram: {<<: *c, format: text, path: ./rule-providers/Telegram.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Telegram/Telegram.list}
+
+  # Twitter
+  Twitter: {<<: *c, format: text, path: ./rule-providers/Twitter.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Twitter/Twitter.list}
+
+  # Instagram
+  Instagram: {<<: *c, format: text, path: ./rule-providers/Instagram.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Instagram/Instagram.list}
+
+  # Discord
+  Discord: {<<: *c, format: text, path: ./rule-providers/Discord.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Discord/Discord.list}
+
+  # Facebook
+  Facebook: {<<: *c, format: text, path: ./rule-providers/Facebook.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Facebook/Facebook.list}
+
+  # Reddit
+  Reddit: {<<: *c, format: text, path: ./rule-providers/Reddit.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Reddit/Reddit.list}
+
+  # Pixiv
+  Pixiv: {<<: *c, format: text, path: ./rule-providers/Pixiv.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Pixiv/Pixiv.list}
+
+  # P
+  P: {<<: *c, format: text, path: ./rule-providers/P.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/P.list}
+
+  # DMM
+  DMM: {<<: *c, format: text, path: ./rule-providers/DMM.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Surge/DMM/DMM.list}
+
+  # PJ
+  PJ: {<<: *c, format: text, path: ./rule-providers/PJ.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/PJ.list}
+
+  # EH
+  EH: {<<: *c, format: text, path: ./rule-providers/EH.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/EH.list}
+
+  # Game
+  Steam: {<<: *c, format: text, path: ./rule-providers/Steam.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Steam.list}
+  Epic: {<<: *c, format: text, path: ./rule-providers/Epic.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Epic.list}
+
+  # OpenAI
+  OpenAI: {<<: *c, format: text, path: ./rule-providers/OpenAI.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/OpenAI/OpenAI.list}
+
+  # TikTok
+  TikTok: {<<: *c, format: text, path: ./rule-providers/TikTok.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/TikTok/TikTok.list}
+
+  # CNDomain
+  ChinaDomain: {<<: *c, format: text, path: ./rule-providers/ChinaDomain.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ChinaDomain.list}
+
+  # Emby
+  Emby: {<<: *c, format: text, path: ./rule-providers/Emby.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/Emby.list}
+
+  # Streaming
+  StreamMedia: {<<: *c, format: text, path: ./rule-providers/StreamMedia.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ProxyMedia.list}
+
+  # Global
+  Global: {<<: *c, format: text, path: ./rule-providers/Global.list,  url: https://github.com/blackmatrix7/ios_rule_script/raw/master/rule/Clash/Global/Global.list}
+ 
+rules:
+  #- SCRIPT,quic,REJECT
+  - RULE-SET,OneDrive,OneDrive
+  - RULE-SET,Github,GitHub
+  - RULE-SET,Microsoft,Microsoft
+  - RULE-SET,YouTube,YouTube
+  - RULE-SET,Google,Google
+  - RULE-SET,Telegram,Telegram
+  - RULE-SET,Twitter,Twitter
+  - RULE-SET,Instagram,Instagram
+  - RULE-SET,Facebook,Facebook
+  - RULE-SET,Discord,Discord
+  - RULE-SET,Pixiv,Pixiv
+  - RULE-SET,Reddit,Reddit
+  - RULE-SET,P,Proxy
+  - RULE-SET,DMM,🇯🇵JPS-Claw 🅒
+  - RULE-SET,PJ,🇯🇵JPS-Claw 🅒
+  - DOMAIN,cdn.up-timely.com,🇯🇵JPS-Claw 🅒
+  - DOMAIN-SUFFIX,aca.best,Proxy
+  - DOMAIN-SUFFIX,acaisbest.com,Proxy
+  - DOMAIN-SUFFIX,122777.xyz,Proxy
+  - DOMAIN-SUFFIX,12345.al,Proxy
+  - RULE-SET,EH,OpenAI
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,Steam,Game
+  - RULE-SET,Epic,Game
+  - RULE-SET,Emby,Emby
+  - RULE-SET,Apple,Apple
+  - RULE-SET,StreamMedia,StreamMedia
+  - DOMAIN-SUFFIX,op.gg,DIRECT
+  - DOMAIN,opgg-static.akamaized.net,DIRECT
+  - RULE-SET,Global,Global
+  - DOMAIN-SUFFIX,250941.xyz,DIRECT
+  - RULE-SET,ChinaDomain,DIRECT
+  - RULE-SET,Lan,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,Final
+
+script:
+  shortcuts:
+    quic: network == 'udp' and dst_port == 443
