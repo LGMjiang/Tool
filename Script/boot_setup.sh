@@ -154,7 +154,12 @@ elif [[ $ufw_status == *"Status: active"* ]]; then
     # 打印现有规则
     ufw status verbose
     echo "请检查现有规则是否符合需求，如果需要修改，手动操作。"
-    exit 1
+    read -r -p "是否需要手动操作: (y/n)" manual_choice
+    if [[ ${manual_choice,,} == "y" ]]; then
+        echo "将要退出脚本进行手动操作..."
+        sleep 1
+        exit 1
+    fi
 else
     echo "无法确定 UFW 状态，请检查系统配置。"
     exit 1
