@@ -6,7 +6,7 @@ echo "更新软件源和软件..."
 apt update -y && apt upgrade -y
 
 # 检查并自动安装必要工具
-for cmd in wget tar curl xz unzip jq; do
+for cmd in wget tar curl xz unzip jq ufw; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd 未安装，正在安装..."
     
@@ -119,6 +119,46 @@ echo "$AUTHORIZED_KEYS_FILE 文件编辑完成，继续执行脚本..."
 # 更改时区
 echo "设置时区为 Asia/Shanghai..."
 timedatectl set-timezone Asia/Shanghai
+
+# 配置 UFW 防火墙
+echo "配置 UFW 防火墙..."
+
+# 查看 UFW 状态
+ufw_status=$(ufw status | head -n 1)
+
+if [[ $ufw_status == *"Status: inactive"* ]]; then
+    # 如果 UFW 状态为 inactive，设置默认策略并启用防火墙
+    echo "UFW 状态为 inactive，正在进行配置并启用防火墙..."
+
+    # 设置默认策略
+    ufw default deny incoming
+    ufw default allow outgoing
+
+    # 允许 SSH 端口
+    echo "开放 SSH 端口: $SSH_PORT"
+    ufw allow $SSH_PORT comment "SSH"
+
+    # 允许 HTTP 和 HTTPS 端口
+    ufw allow 80
+    ufw allow 443
+
+    # 启动 UFW 防火墙，避免提示 y/n
+    echo "启用 UFW 防火墙..."
+    #ufw --force enable > /dev/null 2>&1
+    ufw --force enable
+
+elif [[ $ufw_status == *"Status: active"* ]]; then
+    # 如果 UFW 状态为 active，检查现有规则
+    echo "UFW 状态为 active，正在审查现有规则..."
+
+    # 打印现有规则
+    ufw status verbose
+    echo "请检查现有规则是否符合需求，如果需要修改，手动操作。"
+    exit 1
+else
+    echo "无法确定 UFW 状态，请检查系统配置。"
+    exit 1
+fi
 
 # 提示完成
 echo "所有设置已完成。请确保新的 SSH 配置已在新终端测试后再关闭该终端。"
