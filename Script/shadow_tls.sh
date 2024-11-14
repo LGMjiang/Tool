@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/9
+# last updated:2024/11/14
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -88,7 +88,7 @@ generate_client_config() {
   local surge_udp_relay_param=", udp-relay=true"
   local mihomo_udp_param="true"
   local surge_udp_port_param=", udp_port=${ss_port}"
-  read -r -p "是否开启 udp (Y/N 默认开启): " udp_choice
+  read -r -p "是否开启 udp? (Y/n)" udp_choice
   if [[ ${udp_choice} == "n" ]]; then
     surge_udp_relay_param=""
     mihomo_udp_param="false"
@@ -102,32 +102,34 @@ generate_client_config() {
     surge_udp_port_param=""
   fi
 
-  # 选择协议类型
-  echo
-  echo "选择要生成的协议类型: "
-  echo "1. ss-rust + shadow-tls"
-  echo "2. snell + shadow-tls"
-  read -r -p "请选择协议类型 [1-2]: " protocol_choice
+  while true; do
+    # 选择协议类型
+    echo
+    echo "选择要生成的协议类型: "
+    echo "1. ss-rust + shadow-tls"
+    echo "2. snell + shadow-tls"
+    read -r -p "请选择协议类型 [1-2]: " protocol_choice
 
-  case $protocol_choice in
-    1)
-      # 根据协议选择客户端
-      echo
-      echo "选择要生成的客户端配置 (默认都生成): "
-      echo "1. Surge"
-      echo "2. Mihomo Party"
-      read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
+    case $protocol_choice in
+      1)
+        # 根据协议选择客户端
+        echo
+        echo "选择要生成的客户端配置 (默认都生成): "
+        echo "1. Surge"
+        echo "2. Mihomo Party"
+        read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
 
-      # ss-rust + shadow-tls 配置
-      case $client_choice in
-        1)
-          echo
-          echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
-          echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-        ;;
-        2)
-          echo
-          cat << EOF
+        # ss-rust + shadow-tls 配置
+        case $client_choice in
+          1)
+            echo
+            echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
+            echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+            break
+          ;;
+          2)
+            echo
+            cat << EOF
 Mihomo Party 客户端配置如下 (ss-rust + shadow-tls): 
 - name: "name"
   type: ss
@@ -143,14 +145,15 @@ Mihomo Party 客户端配置如下 (ss-rust + shadow-tls):
     password: "${shadow_tls_password}"
     version: 3
 EOF
-        ;;
-        *)
-          echo
-          echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
-          echo "Surge 客户端配置如下: "
-          echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-          echo
-          cat << EOF
+            break
+          ;;
+          *)
+            echo
+            echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
+            echo "Surge 客户端配置如下: "
+            echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+            echo
+            cat << EOF
 Mihomo Party 客户端配置如下: 
 - name: "name"
   type: ss
@@ -166,32 +169,35 @@ Mihomo Party 客户端配置如下:
     password: "${shadow_tls_password}"
     version: 3
 EOF
-        ;;
-      esac
-    ;;
-    2)
-      # snell + shadow-tls 配置
+            break
+          ;;
+        esac
+      ;;
+      2)
+        # snell + shadow-tls 配置
 
-      # 根据 snell_obfs 的值设置 obfs_param
-      if [[ "${snell_obfs}" == "http" ]]; then
-        obfs_param=", obfs=http"
-      fi
+        # 根据 snell_obfs 的值设置 obfs_param
+        if [[ "${snell_obfs}" == "http" ]]; then
+          obfs_param=", obfs=http"
+        fi
 
-      # 选择是否开启 reuse
-      local reuse_param=""
-      read -r -p "是否开启 reuse (Y/N 默认不开启): " reuse_choice
-      if [[ ${reuse_choice} == "y" ]]; then
-        reuse_param=", reuse=true"
-      fi
+        # 选择是否开启 reuse
+        local reuse_param=""
+        read -r -p "是否开启 reuse? (y/N)" reuse_choice
+        if [[ ${reuse_choice} == "y" ]]; then
+          reuse_param=", reuse=true"
+        fi
 
-      echo
-      echo "Surge 客户端配置如下 (snell + shadow-tls): "
-      echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
-    ;;
-    *)
-      echo "无效选择！请重新运行脚本并选择有效的协议类型。"
-    ;;
-  esac
+        echo
+        echo "Surge 客户端配置如下 (snell + shadow-tls): "
+        echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
+        break
+      ;;
+      *)
+        echo "无效选择！请重新选择有效的协议类型。"
+      ;;
+    esac
+  done
 }
 
 # 卸载 Shadow-TLS 函数
@@ -249,7 +255,7 @@ install_shadow_tls() {
 密码：${shadow_tls_password}
 EOF
 
-  read -r -p "确认无误？(Y/N) " confirm
+  read -r -p "是否确认无误? (y/n)" confirm
   case "$confirm" in
     [yY]) ;;
     *)
