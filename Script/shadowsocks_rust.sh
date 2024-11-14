@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/7
+# last updated:2024/11/14
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -53,7 +53,7 @@ generate_client_config() {
   # 选择是否开启 udp
   local surge_udp_relay_param=", udp-relay=true"
   local mihomo_udp_param="true"
-  read -r -p "是否开启 udp (Y/N 默认开启): " udp_choice
+  read -r -p "是否开启 udp? (Y/n)" udp_choice
   if [[ ${udp_choice} == "n" ]]; then
     surge_udp_relay_param=""
     mihomo_udp_param="false"
@@ -144,11 +144,11 @@ update_ss() {
 # 安装 Shadowsocks-Rust 函数
 install_ss() {
   # 获取用户输入的配置信息
-  read -r -p "请输入 Shadowsocks-Rust 监听端口 (留空默认随机端口号): " ss_port
+  read -r -p "请输入 Shadowsocks-Rust 监听端口 (默认随机): " ss_port
   ss_port=${ss_port:-$(shuf -i 10000-30000 -n 1)}
 
   # 获取用户输入的配置信息
-  read -r -p "请输入 Shadowsocks 密码 (留空随机生成): " ss_password
+  read -r -p "请输入 Shadowsocks 密码 (默认随机): " ss_password
   if [[ -z "$ss_password" ]]; then
     # 选择加密方法
     echo "选择加密方法:"
@@ -179,7 +179,7 @@ install_ss() {
   fi
 
   # 选择传输模式
-  echo "选择传输模式 (留空默认tcp_and_udp): "
+  echo "选择传输模式: "
   echo "1. tcp_and_udp (默认)"
   echo "2. tcp_only"
   echo "3. udp_only"
@@ -192,7 +192,7 @@ install_ss() {
     *) echo "无效选择，使用默认 tcp_and_udp" ; ss_mode="tcp_and_udp" ;;
   esac
 
-  read -r -p "是否开启 TFO (Y/N 默认不开启): " enable_tfo
+  read -r -p "是否开启 TFO? (y/N)" enable_tfo
   if [[ ${enable_tfo,,} == "y" ]]; then
     ss_tfo=true
   else
@@ -209,7 +209,7 @@ TFO：${ss_tfo}
 传输模式：${ss_mode}
 EOF
 
-  read -r -p "确认无误？(Y/N) " confirm
+  read -r -p "是否确认无误? (y/n)" confirm
   case "$confirm" in
     [yY]) ;;
     *)
