@@ -165,5 +165,18 @@ else
     exit 1
 fi
 
+# 安装 docker
+echo "安装 docker..."
+read -r -p "是否选择安装 docker: (y/n)" docker_choice
+if [[ ${docker_choice,,} == "y" ]]; then
+    echo "正在安装 docker..."
+    curl -fsSL https://get.docker.com | sh
+    echo "docker 安装完毕"
+    sleep 1
+else
+    echo "选择不安装 docker"
+    sleep 1
+fi
+
 # 提示完成
 echo "所有设置已完成。请确保新的 SSH 配置已在新终端测试后再关闭该终端。"
