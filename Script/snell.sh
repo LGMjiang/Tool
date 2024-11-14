@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/4
+# last updated:2024/11/14
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -53,7 +53,7 @@ generate_client_config() {
 
   # 选择是否开启 reuse
   local reuse_param=""
-  read -r -p "是否开启 reuse (Y/N 默认不开启): " reuse_choice
+  read -r -p "是否开启 reuse? (y/N)" reuse_choice
   if [[ ${reuse_choice} == "y" ]]; then
     reuse_param=", reuse=true"
   fi
@@ -102,22 +102,22 @@ update_snell() {
 # 安装 Snell 函数
 install_snell() {
   # 获取用户输入的配置信息
-  read -r -p "请输入 Snell 监听端口 (留空默认随机端口号): " snell_port
+  read -r -p "请输入 Snell 监听端口 (默认随机): " snell_port
   snell_port=${snell_port:-$(shuf -i 10000-30000 -n 1)}
 
-  read -r -p "请输入 Snell 密码 (留空随机生成): " snell_password
+  read -r -p "请输入 Snell 密码 (默认随机): " snell_password
   if [[ -z "$snell_password" ]]; then
     snell_password=$(openssl rand -base64 24)
   fi
 
-  read -r -p "是否开启 HTTP 混淆 (Y/N 默认不开启): " enable_http_obfs
+  read -r -p "是否开启 HTTP 混淆? (y/N)" enable_http_obfs
   if [[ ${enable_http_obfs,,} == "y" ]]; then
     snell_obfs="http"
   else
     snell_obfs="off"
   fi
 
-  read -r -p "是否开启 ipv6 (Y/N 默认不开启): " snell_ipv6
+  read -r -p "是否开启 ipv6? (y/N)" snell_ipv6
   if [[ ${snell_ipv6,,} == "y" ]]; then
     snell_ipv6="true"
   else
@@ -133,7 +133,7 @@ install_snell() {
 ipv6：${snell_ipv6}
 EOF
 
-  read -r -p "确认无误？(Y/N) " confirm
+  read -r -p "是否确认无误? (y/n)" confirm
   case "$confirm" in
     [yY]) ;;
     *)
