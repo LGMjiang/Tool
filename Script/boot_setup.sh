@@ -166,15 +166,21 @@ else
 fi
 
 # 安装 docker
-echo "安装 docker..."
-read -r -p "是否选择安装 docker: (y/n)" docker_choice
+echo "安装 Docker..."
+read -r -p "是否选择安装 Docker: (y/n)" docker_choice
 if [[ ${docker_choice,,} == "y" ]]; then
-    echo "正在安装 docker..."
+    echo "正在安装 Docker..."
     curl -fsSL https://get.docker.com | sh
-    echo "docker 安装完毕"
+    # 检查 Docker 是否安装成功
+    if command -v docker &> /dev/null; then
+        echo "Docker 安装成功！"
+    else
+        echo "Docker 安装失败，请检查错误信息。"
+        exit 1
+    fi
     sleep 1
 else
-    echo "选择不安装 docker"
+    echo "选择不安装 Docker"
     sleep 1
 fi
 
