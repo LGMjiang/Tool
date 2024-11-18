@@ -48,7 +48,8 @@ esac
 
 # 生成客户端配置
 generate_client_config() {
-  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  local server_ip
+  server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
 
   # 选择是否开启 udp
   local surge_udp_relay_param=", udp-relay=true"
@@ -312,17 +313,17 @@ show_menu() {
             ;;
         1)
             install_ss
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         2)
             update_ss
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         3)
             uninstall_ss
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         *)
