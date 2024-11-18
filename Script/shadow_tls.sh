@@ -125,7 +125,7 @@ generate_client_config() {
       1)
         echo
         echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
-        echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+        echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
         # break
       ;;
       2)
@@ -135,7 +135,7 @@ Mihomo Party 客户端配置如下 (ss-rust + shadow-tls):
 - name: "name"
 type: ss
 server: ${server_ip}
-port: ${ss_port}
+port: ${shadow_tls_port}
 cipher: ${encryption_method}
 password: "${ss_password}"
 udp: ${mihomo_udp_param}
@@ -152,14 +152,14 @@ EOF
         echo
         echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
         echo "Surge 客户端配置如下: "
-        echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+        echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
         echo
         cat << EOF
 Mihomo Party 客户端配置如下: 
 - name: "name"
 type: ss
 server: ${server_ip}
-port: ${ss_port}
+port: ${shadow_tls_port}
 cipher: ${encryption_method}
 password: "${ss_password}"
 udp: ${mihomo_udp_param}
