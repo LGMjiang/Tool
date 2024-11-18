@@ -54,7 +54,8 @@ else
     echo "检测到已有配置文件，正在打包备份..."
     
     # 打包备份文件
-    tar -czf "$BACKUP_FILE" "$SSH_CONF_DIR"/*.conf -C "$SSH_CONF_DIR" && echo "备份完成: $BACKUP_FILE"
+    tar -czf "$BACKUP_FILE" "$SSH_CONF_DIR"/*.conf && echo "备份完成: $BACKUP_FILE"
+    mv $BACKUP_FILE $SSH_CONF_DIR
     
     # 删除已有配置文件
     rm -f "$SSH_CONF_DIR"/*.conf
@@ -76,7 +77,8 @@ fi
 
 # 重启 SSH 服务
 echo "重启 SSH 服务..."
-if ! systemctl daemon-reload || ! systemctl restart sshd; then
+systemctl daemon-reload
+if ! systemctl restart sshd &> /dev/null; then
   ERROR_MSG=$(systemctl restart sshd 2>&1)
   if [[ $ERROR_MSG == *"Unit sshd.service not found"* ]]; then
     echo "未找到 sshd.service，尝试启用 ssh.service..."
@@ -100,12 +102,6 @@ passwd
 
 # 设置密钥登录
 echo "请在终端自行生成密钥对，然后手动将公钥拷贝至 ~/.ssh/authorized_keys。"
-echo "确保授权文件权限为 600。"
-echo
-echo "请将公钥拷贝至 authorized_keys 文件..."
-sleep 1
-vim ~/.ssh/authorized_keys
-echo "authorized_keys 已编辑完毕！"
 
 # 检查~/.ssh/authorized_keys文件是否存在
 if [ -f "$AUTHORIZED_KEYS_FILE" ]; then
