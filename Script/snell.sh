@@ -43,7 +43,8 @@ esac
 
 # 生成客户端配置
 generate_client_config() {
-  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  local server_ip
+  server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
   local obfs_param=""
 
   # 根据 snell_obfs 的值设置 obfs_param
@@ -222,17 +223,17 @@ show_menu() {
             ;;
         1)
             install_snell
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         2)
             update_snell
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         3)
             uninstall_snell
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         *)
