@@ -133,18 +133,18 @@ generate_client_config() {
         cat << EOF
 Mihomo Party 客户端配置如下 (ss-rust + shadow-tls): 
 - name: "name"
-type: ss
-server: ${server_ip}
-port: ${shadow_tls_port}
-cipher: ${encryption_method}
-password: "${ss_password}"
-udp: ${mihomo_udp_param}
-plugin: shadow-tls
-client-fingerprint: chrome
-plugin-opts:
-host: "gateway.icloud.com"
-password: "${shadow_tls_password}"
-version: 3
+  type: ss
+  server: ${server_ip}
+  port: ${shadow_tls_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: "gateway.icloud.com"
+    password: "${shadow_tls_password}"
+    version: 3
 EOF
         # break
       ;;
@@ -157,18 +157,18 @@ EOF
         cat << EOF
 Mihomo Party 客户端配置如下: 
 - name: "name"
-type: ss
-server: ${server_ip}
-port: ${shadow_tls_port}
-cipher: ${encryption_method}
-password: "${ss_password}"
-udp: ${mihomo_udp_param}
-plugin: shadow-tls
-client-fingerprint: chrome
-plugin-opts:
-host: "gateway.icloud.com"
-password: "${shadow_tls_password}"
-version: 3
+  type: ss
+  server: ${server_ip}
+  port: ${shadow_tls_port}
+  cipher: ${encryption_method}
+  password: "${ss_password}"
+  udp: ${mihomo_udp_param}
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: "gateway.icloud.com"
+    password: "${shadow_tls_password}"
+    version: 3
 EOF
         # break
       ;;
