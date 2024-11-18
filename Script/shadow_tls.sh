@@ -44,14 +44,15 @@ esac
 
 # 生成客户端配置
 generate_client_config() {
-  local server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  local server_ip
+  server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
   local ss_port=""
   local ss_transmission_mode=""
   local ss_password=""
   local encryption_method=""
-  local snell_port=""
-  local snell_psk=""
-  local snell_obfs=""
+  # local snell_port=""
+  # local snell_psk=""
+  # local snell_obfs=""
 
   # 检查 Shadowsocks-Rust 的服务和配置文件
   if ! ssserver -V > /dev/null 2>&1; then
@@ -69,20 +70,20 @@ generate_client_config() {
     encryption_method=$(grep '"method"' /etc/ss-rust/config.json | sed 's/.*"method": "\(.*\)",/\1/') # 获取 ss-rust 服务的加密方式
   fi
 
-  # 检查 Snell 的配置
-  if ! snell-server -v > /dev/null 2>&1; then
-    echo "无法生成 snell + shadow-tls 的配置文件！"
-    echo "未检测到 Snell 服务！"
-    return
-  elif [[ ! -e /etc/snell/snell-server.conf ]]; then
-    echo "无法生成 snell + shadow-tls 的配置文件！"
-    echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
-    return
-  else
-    snell_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
-    snell_psk=$(grep 'psk' /etc/snell/snell-server.conf | sed 's/psk = "\(.*\)"/\1/')  # 获取 Snell 的 PSK
-    snell_obfs=$(grep 'obfs' /etc/snell/snell-server.conf | sed 's/obfs = \(.*\)/\1/') # 获取 Snell 的 OBFS
-  fi
+  # # 检查 Snell 的配置
+  # if ! snell-server -v > /dev/null 2>&1; then
+  #   echo "无法生成 snell + shadow-tls 的配置文件！"
+  #   echo "未检测到 Snell 服务！"
+  #   return
+  # elif [[ ! -e /etc/snell/snell-server.conf ]]; then
+  #   echo "无法生成 snell + shadow-tls 的配置文件！"
+  #   echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
+  #   return
+  # else
+  #   snell_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
+  #   snell_psk=$(grep 'psk' /etc/snell/snell-server.conf | sed 's/psk = "\(.*\)"/\1/')  # 获取 Snell 的 PSK
+  #   snell_obfs=$(grep 'obfs' /etc/snell/snell-server.conf | sed 's/obfs = \(.*\)/\1/') # 获取 Snell 的 OBFS
+  # fi
 
   # 选择是否开启 udp
   local surge_udp_relay_param=", udp-relay=true"
@@ -102,102 +103,102 @@ generate_client_config() {
     surge_udp_port_param=""
   fi
 
-  while true; do
-    # 选择协议类型
+  # while true; do
+  #   # 选择协议类型
+  #   echo
+  #   echo "选择要生成的协议类型: "
+  #   echo "1. ss-rust + shadow-tls"
+  #   echo "2. snell + shadow-tls"
+  #   read -r -p "请选择协议类型 [1-2]: " protocol_choice
+
+  # case $protocol_choice in
+  #   1)
+    # 根据协议选择客户端
     echo
-    echo "选择要生成的协议类型: "
-    echo "1. ss-rust + shadow-tls"
-    echo "2. snell + shadow-tls"
-    read -r -p "请选择协议类型 [1-2]: " protocol_choice
+    echo "选择要生成的客户端配置 (默认都生成): "
+    echo "1. Surge"
+    echo "2. Mihomo Party"
+    read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
 
-    case $protocol_choice in
+    # ss-rust + shadow-tls 配置
+    case $client_choice in
       1)
-        # 根据协议选择客户端
         echo
-        echo "选择要生成的客户端配置 (默认都生成): "
-        echo "1. Surge"
-        echo "2. Mihomo Party"
-        read -r -p "请选择要生成的客户端配置 [1-2]: " client_choice
-
-        # ss-rust + shadow-tls 配置
-        case $client_choice in
-          1)
-            echo
-            echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
-            echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-            break
-          ;;
-          2)
-            echo
-            cat << EOF
-Mihomo Party 客户端配置如下 (ss-rust + shadow-tls): 
-- name: "name"
-  type: ss
-  server: ${server_ip}
-  port: ${ss_port}
-  cipher: ${encryption_method}
-  password: "${ss_password}"
-  udp: ${mihomo_udp_param}
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: "gateway.icloud.com"
-    password: "${shadow_tls_password}"
-    version: 3
-EOF
-            break
-          ;;
-          *)
-            echo
-            echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
-            echo "Surge 客户端配置如下: "
-            echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-            echo
-            cat << EOF
-Mihomo Party 客户端配置如下: 
-- name: "name"
-  type: ss
-  server: ${server_ip}
-  port: ${ss_port}
-  cipher: ${encryption_method}
-  password: "${ss_password}"
-  udp: ${mihomo_udp_param}
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: "gateway.icloud.com"
-    password: "${shadow_tls_password}"
-    version: 3
-EOF
-            break
-          ;;
-        esac
+        echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
+        echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+        # break
       ;;
       2)
-        # snell + shadow-tls 配置
-
-        # 根据 snell_obfs 的值设置 obfs_param
-        if [[ "${snell_obfs}" == "http" ]]; then
-          obfs_param=", obfs=http"
-        fi
-
-        # 选择是否开启 reuse
-        local reuse_param=""
-        read -r -p "是否开启 reuse? (y/N)" reuse_choice
-        if [[ ${reuse_choice} == "y" ]]; then
-          reuse_param=", reuse=true"
-        fi
-
         echo
-        echo "Surge 客户端配置如下 (snell + shadow-tls): "
-        echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
-        break
+        cat << EOF
+Mihomo Party 客户端配置如下 (ss-rust + shadow-tls): 
+- name: "name"
+type: ss
+server: ${server_ip}
+port: ${ss_port}
+cipher: ${encryption_method}
+password: "${ss_password}"
+udp: ${mihomo_udp_param}
+plugin: shadow-tls
+client-fingerprint: chrome
+plugin-opts:
+host: "gateway.icloud.com"
+password: "${shadow_tls_password}"
+version: 3
+EOF
+        # break
       ;;
       *)
-        echo "无效选择！请重新选择有效的协议类型。"
+        echo
+        echo "无效选择，默认自动输出所有客户端配置 (ss-rust + shadow-tls)！"
+        echo "Surge 客户端配置如下: "
+        echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
+        echo
+        cat << EOF
+Mihomo Party 客户端配置如下: 
+- name: "name"
+type: ss
+server: ${server_ip}
+port: ${ss_port}
+cipher: ${encryption_method}
+password: "${ss_password}"
+udp: ${mihomo_udp_param}
+plugin: shadow-tls
+client-fingerprint: chrome
+plugin-opts:
+host: "gateway.icloud.com"
+password: "${shadow_tls_password}"
+version: 3
+EOF
+        # break
       ;;
     esac
-  done
+    # ;;
+  #   2)
+  #     # snell + shadow-tls 配置
+
+  #     # 根据 snell_obfs 的值设置 obfs_param
+  #     if [[ "${snell_obfs}" == "http" ]]; then
+  #       obfs_param=", obfs=http"
+  #     fi
+
+  #     # 选择是否开启 reuse
+  #     local reuse_param=""
+  #     read -r -p "是否开启 reuse? (y/N)" reuse_choice
+  #     if [[ ${reuse_choice} == "y" ]]; then
+  #       reuse_param=", reuse=true"
+  #     fi
+
+  #     echo
+  #     echo "Surge 客户端配置如下 (snell + shadow-tls): "
+  #     echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
+  #     # break
+  #   ;;
+  #   *)
+  #     echo "无效选择！请重新选择有效的协议类型。"
+  #   ;;
+  # esac
+  # done
 }
 
 # 卸载 Shadow-TLS 函数
@@ -329,17 +330,17 @@ show_menu() {
             ;;
         1)
             install_shadow_tls
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         2)
             update_shadow_tls
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         3)
             uninstall_shadow_tls
-            echo && printf "* 按回车返回主菜单 *" && read temp
+            echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         *)
