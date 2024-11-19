@@ -49,7 +49,8 @@ esac
 # 生成客户端配置
 generate_client_config() {
   local server_ip
-  server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  # server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
+  server_ip=$(curl -s https://api.ipify.org)
 
   # 选择是否开启 udp
   local surge_udp_relay_param=", udp-relay=true"
