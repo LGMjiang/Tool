@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/14
+# last updated:2024/11/19
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -46,13 +46,13 @@ esac
 generate_client_config() {
   local server_ip
   server_ip=$(hostname -I | awk '{print $1}')  # 获取私有 IP 地址
-  local ss_port=""
+  # local ss_port=""
   local ss_transmission_mode=""
   local ss_password=""
   local encryption_method=""
   # local snell_port=""
-  # local snell_psk=""
-  # local snell_obfs=""
+  local snell_psk=""
+  local snell_obfs=""
 
   # 检查 Shadowsocks-Rust 的服务和配置文件
   if ! ssserver -V > /dev/null 2>&1; then
@@ -64,31 +64,31 @@ generate_client_config() {
     echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
     return
   else
-    ss_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
+    # ss_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
     ss_transmission_mode=$(grep '"mode"' /etc/ss-rust/config.json | sed 's/.*"mode": "\(.*\)",/\1/') # 获取 ss-rust 服务的传输模式
     ss_password=$(grep '"password"' /etc/ss-rust/config.json | sed 's/.*"password": "\(.*\)",/\1/') # 获取 ss-rust 服务的密码
     encryption_method=$(grep '"method"' /etc/ss-rust/config.json | sed 's/.*"method": "\(.*\)",/\1/') # 获取 ss-rust 服务的加密方式
   fi
 
-  # # 检查 Snell 的配置
-  # if ! snell-server -v > /dev/null 2>&1; then
-  #   echo "无法生成 snell + shadow-tls 的配置文件！"
-  #   echo "未检测到 Snell 服务！"
-  #   return
-  # elif [[ ! -e /etc/snell/snell-server.conf ]]; then
-  #   echo "无法生成 snell + shadow-tls 的配置文件！"
-  #   echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
-  #   return
-  # else
-  #   snell_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
-  #   snell_psk=$(grep 'psk' /etc/snell/snell-server.conf | sed 's/psk = "\(.*\)"/\1/')  # 获取 Snell 的 PSK
-  #   snell_obfs=$(grep 'obfs' /etc/snell/snell-server.conf | sed 's/obfs = \(.*\)/\1/') # 获取 Snell 的 OBFS
-  # fi
+  # 检查 Snell 的配置
+  if ! snell-server -v > /dev/null 2>&1; then
+    echo "无法生成 snell + shadow-tls 的配置文件！"
+    echo "未检测到 Snell 服务！"
+    return
+  elif [[ ! -e /etc/snell/snell-server.conf ]]; then
+    echo "无法生成 snell + shadow-tls 的配置文件！"
+    echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
+    return
+  else
+    # snell_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
+    snell_psk=$(grep 'psk' /etc/snell/snell-server.conf | sed 's/psk = "\(.*\)"/\1/')  # 获取 Snell 的 PSK
+    snell_obfs=$(grep 'obfs' /etc/snell/snell-server.conf | sed 's/obfs = \(.*\)/\1/') # 获取 Snell 的 OBFS
+  fi
 
   # 选择是否开启 udp
   local surge_udp_relay_param=", udp-relay=true"
   local mihomo_udp_param="true"
-  local surge_udp_port_param=", udp_port=${ss_port}"
+  local surge_udp_port_param=", udp_port=${protocol_port}"
   read -r -p "是否开启 udp? (Y/n)" udp_choice
   if [[ ${udp_choice} == "n" ]]; then
     surge_udp_relay_param=""
@@ -103,16 +103,7 @@ generate_client_config() {
     surge_udp_port_param=""
   fi
 
-  # while true; do
-  #   # 选择协议类型
-  #   echo
-  #   echo "选择要生成的协议类型: "
-  #   echo "1. ss-rust + shadow-tls"
-  #   echo "2. snell + shadow-tls"
-  #   read -r -p "请选择协议类型 [1-2]: " protocol_choice
-
-  # case $protocol_choice in
-  #   1)
+  if [[ $protocol_type == "ss-rust" ]]; then
     # 根据协议选择客户端
     echo
     echo "选择要生成的客户端配置 (默认都生成): "
@@ -126,7 +117,6 @@ generate_client_config() {
         echo
         echo "Surge 客户端配置如下 (ss-rust + shadow-tls): "
         echo "name = ss, ${server_ip}, ${shadow_tls_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3${surge_udp_port_param}"
-        # break
       ;;
       2)
         echo
@@ -146,7 +136,6 @@ Mihomo Party 客户端配置如下 (ss-rust + shadow-tls):
     password: "${shadow_tls_password}"
     version: 3
 EOF
-        # break
       ;;
       *)
         echo
@@ -170,35 +159,27 @@ Mihomo Party 客户端配置如下:
     password: "${shadow_tls_password}"
     version: 3
 EOF
-        # break
       ;;
     esac
-    # ;;
-  #   2)
-  #     # snell + shadow-tls 配置
+  elif [[ $protocol_type == "snell" ]]; then
+      # snell + shadow-tls 配置
 
-  #     # 根据 snell_obfs 的值设置 obfs_param
-  #     if [[ "${snell_obfs}" == "http" ]]; then
-  #       obfs_param=", obfs=http"
-  #     fi
+      # 根据 snell_obfs 的值设置 obfs_param
+      if [[ "${snell_obfs}" == "http" ]]; then
+        obfs_param=", obfs=http"
+      fi
 
-  #     # 选择是否开启 reuse
-  #     local reuse_param=""
-  #     read -r -p "是否开启 reuse? (y/N)" reuse_choice
-  #     if [[ ${reuse_choice} == "y" ]]; then
-  #       reuse_param=", reuse=true"
-  #     fi
+      # 选择是否开启 reuse
+      local reuse_param=""
+      read -r -p "是否开启 reuse? (y/N)" reuse_choice
+      if [[ ${reuse_choice} == "y" ]]; then
+        reuse_param=", reuse=true"
+      fi
 
-  #     echo
-  #     echo "Surge 客户端配置如下 (snell + shadow-tls): "
-  #     echo "name = snell, ${server_ip}, ${snell_port}, psk=${snell_password}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
-  #     # break
-  #   ;;
-  #   *)
-  #     echo "无效选择！请重新选择有效的协议类型。"
-  #   ;;
-  # esac
-  # done
+      echo
+      echo "Surge 客户端配置如下 (snell + shadow-tls): "
+      echo "name = snell, ${server_ip}, ${shadow_tls_port}, psk=${snell_psk}, version=4${obfs_param}${reuse_param}, shadow-tls-password=${shadow_tls_password}, shadow-tls-sni=gateway.icloud.com, shadow-tls-version=3"
+  fi
 }
 
 # 卸载 Shadow-TLS 函数
@@ -226,19 +207,48 @@ update_shadow_tls() {
 
 # 安装 Shadow-TLS 函数
 install_shadow_tls() {
-  local ss_port=""
-  # 检查 Shadowsocks-Rust 的服务和配置文件
-  if ! ssserver -V > /dev/null 2>&1; then
-    echo "无法继续安装 Shadow-TLS 服务！"
-    echo "未检测到 Shadowsocks-Rust 服务！"
-    exit 1
-  elif [[ ! -e /etc/ss-rust/config.json ]]; then
-    echo "无法继续安装 Shadow-TLS 服务！"
-    echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
-    exit 1
-  else
-    ss_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
-  fi
+
+  while true; do
+    read -r -p "请选择 Shadow-TLS 服务类型: [1] ss-rust [2] snell: " protocol_type
+
+    case "$protocol_type" in
+    1)
+      # 检查 Shadowsocks-Rust 的服务和配置文件
+      if ! ssserver -V > /dev/null 2>&1; then
+        echo "无法继续安装 Shadow-TLS 服务！"
+        echo "未检测到 Shadowsocks-Rust 服务！"
+        exit 1
+      elif [[ ! -e /etc/ss-rust/config.json ]]; then
+        echo "无法继续安装 Shadow-TLS 服务！"
+        echo "未检测到 Shadowsocks-Rust 的配置文件！请检查其配置文件是否在/etc/ss-rust/目录下！"
+        exit 1
+      else
+        protocol_type="ss-rust"
+        protocol_port=$(grep '"server_port"' /etc/ss-rust/config.json | sed 's/[^0-9]*\([0-9]*\).*/\1/') # 获取 ss-rust 服务的端口号
+      fi
+      break
+      ;;
+    2)
+      # 检查 Snell 的配置
+      if ! snell-server -v > /dev/null 2>&1; then
+        echo "无法生成 snell + shadow-tls 的配置文件！"
+        echo "未检测到 Snell 服务！"
+        return
+      elif [[ ! -e /etc/snell/snell-server.conf ]]; then
+        echo "无法生成 snell + shadow-tls 的配置文件！"
+        echo "未检测到 Snell 的配置文件！请检查其配置文件是否在 /etc/snell/ 目录下！"
+        return
+      else
+        protocol_type="snell"
+        protocol_port=$(grep 'listen' /etc/snell/snell-server.conf | sed 's/.*://')  # 获取 Snell 服务的端口号
+      fi
+      break
+      ;;
+    *)
+      echo "无效选择，请重新选择！"
+      ;;
+    esac
+  done
 
   # 获取用户输入的配置信息
   read -r -p "请输入 Shadow-TLS 监听端口 (留空默认随机端口号): " shadow_tls_port
@@ -270,7 +280,7 @@ EOF
   chmod +x /usr/local/bin/shadow-tls
 
   # 创建 Systemd 服务文件
-  cat > /lib/systemd/system/shadow-tls.service <<EOF
+  cat > /lib/systemd/system/shadow-tls-${protocol_type}.service <<EOF
 [Unit]
 Description=Shadow-TLS Server Service
 After=network-online.target
@@ -284,10 +294,10 @@ Restart=on-failure
 RestartSec=5s
 Environment=MONOIO_FORCE_LEGACY_DRIVER=1
 ExecStartPre=/bin/sh -c ulimit -n 51200
-ExecStart=/usr/local/bin/shadow-tls --v3 --strict server --listen 0.0.0.0:${shadow_tls_port} --server 127.0.0.1:${ss_port} --tls gateway.icloud.com --password ${shadow_tls_password}
+ExecStart=/usr/local/bin/shadow-tls --v3 --strict server --listen 0.0.0.0:${shadow_tls_port} --server 127.0.0.1:${protocol_port} --tls gateway.icloud.com --password ${shadow_tls_password}
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=shadow-tls
+SyslogIdentifier=shadow-tls-${protocol_type}
 
 [Install]
 WantedBy=multi-user.target
