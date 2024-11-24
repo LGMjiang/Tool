@@ -359,16 +359,16 @@ rules:
   - RULE-SET,DMM,🇯🇵JPS-ClawJP 🅒
   - RULE-SET,PJ,🇯🇵JPS-ClawJP 🅒
   - DOMAIN,cdn.up-timely.com,🇯🇵JPS-ClawJP 🅒
-  - DOMAIN-SUFFIX,aca.best,Proxy
-  - DOMAIN-SUFFIX,acaisbest.com,Proxy
-  - DOMAIN-SUFFIX,122777.xyz,Proxy
-  - DOMAIN-SUFFIX,12345.al,Proxy
   - RULE-SET,EH,OpenAI
   - RULE-SET,OpenAI,OpenAI
   - RULE-SET,TikTok,TikTok
   - RULE-SET,Steam,Game
   - RULE-SET,Epic,Game
   - RULE-SET,Emby,Emby
+  - DOMAIN-SUFFIX,aca.best,Proxy
+  - DOMAIN-SUFFIX,acaisbest.com,Proxy
+  - DOMAIN-SUFFIX,122777.xyz,Proxy
+  - DOMAIN-SUFFIX,12345.al,Proxy
   - RULE-SET,Apple,Apple
   - RULE-SET,StreamMedia,StreamMedia
   - DOMAIN-SUFFIX,op.gg,DIRECT
