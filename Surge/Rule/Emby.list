@@ -1,3 +1,6 @@
+# ACA Emby
+DOMAIN-SUFFIX,aca.misakaf.org
+
 # misakaf
 DOMAIN-SUFFIX,misakaf.org
 DOMAIN-SUFFIX,stream1.misakaf.org
@@ -56,15 +59,6 @@ DOMAIN-SUFFIX,aws.jmsooo.com
 DOMAIN-SUFFIX,ntt1.jmsooo.com
 DOMAIN-SUFFIX,hinet.jmsooo.com
 DOMAIN-SUFFIX,cf1.jmsooo.com
-
-# ACA Emby
-DOMAIN-SUFFIX,emby.aca.best
-
-# ACA Porn
-DOMAIN-SUFFIX,porn.aca.best
-
-# 黑丝
-DOMAIN-SUFFIX,i109.com
 
 # 探花TV
 DOMAIN-SUFFIX,tanhuatv.site
