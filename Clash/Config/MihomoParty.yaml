@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2024/11/11
+# last updated: 2024/11/26
 #
 # ================
 
@@ -231,9 +231,11 @@ proxy-groups:
   
   - {name: Google, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png}
 
-  - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Pixiv.png}
+  - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Pixiv.png}
 
-  - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/master/Clash/Icon/Reddit.png}
+  - {name: DMM, type: select, proxies: [Proxy, Japan, 🇯🇵JPS-ClawJP 🅒, 🇯🇵Claw 🅑], icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/DMM.png}
+
+  - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Reddit.png}
 
   - {name: OneDrive, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/OneDrive.png}
 
@@ -356,9 +358,9 @@ rules:
   - RULE-SET,Pixiv,Pixiv
   - RULE-SET,Reddit,Reddit
   - RULE-SET,P,Proxy
-  - RULE-SET,DMM,🇯🇵JPS-ClawJP 🅒
-  - RULE-SET,PJ,🇯🇵JPS-ClawJP 🅒
-  - DOMAIN,cdn.up-timely.com,🇯🇵JPS-ClawJP 🅒
+  - RULE-SET,DMM,DMM
+  - RULE-SET,PJ,DMM
+  - DOMAIN,cdn.up-timely.com,DMM
   - RULE-SET,EH,OpenAI
   - RULE-SET,OpenAI,OpenAI
   - RULE-SET,TikTok,TikTok
