@@ -1,7 +1,7 @@
 # ACA Emby
 DOMAIN-SUFFIX,aca.misakaf.org
 
-# misakaf
+# Misakaf
 DOMAIN-SUFFIX,misakaf.org
 DOMAIN-SUFFIX,stream1.misakaf.org
 DOMAIN-SUFFIX,stream2.misakaf.org
@@ -20,7 +20,7 @@ DOMAIN-SUFFIX,pub1back.emby.wtf
 DOMAIN-SUFFIX,pub2back.emby.wtf
 DOMAIN-SUFFIX,pub3back.emby.wtf
 
-# pronemby
+# Pronemby
 DOMAIN-SUFFIX,pornemby.com
 
 # 放映厅
@@ -29,8 +29,8 @@ DOMAIN-SUFFIX,emby.9191001.xyz
 # 纸片人
 DOMAIN-SUFFIX,embyplus.org
 
-# nmemby
-DOMAIN-SUFFIX,ohhhh.org
+# NMEmby
+# DOMAIN-SUFFIX,ohhhh.org
 
 # Paul电报服
 DOMAIN-SUFFIX,imetyou.top
@@ -59,7 +59,16 @@ DOMAIN-SUFFIX,aws.jmsooo.com
 DOMAIN-SUFFIX,ntt1.jmsooo.com
 DOMAIN-SUFFIX,hinet.jmsooo.com
 DOMAIN-SUFFIX,cf1.jmsooo.com
+DOMAIN-SUFFIX,cf1.jmsuper.com
+DOMAIN-SUFFIX,cf2.jmsuper.com
 
 # 探花TV
 DOMAIN-SUFFIX,tanhuatv.site
 IP-CIDR,152.53.67.239/32,no-resolve
+
+# HKA
+DOMAIN-SUFFIX,hka-emby.aliz.work
+
+# 未响音乐
+DOMAIN-SUFFIX,music.mefun.org
+
