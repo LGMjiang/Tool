@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/19
+# last updated:2024/12/07
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -185,11 +185,37 @@ EOF
 
 # 卸载 Shadow-TLS 函数
 uninstall_shadow_tls() {
-  systemctl stop shadow-tls.service || { echo "无法停止 Shadow-TLS 服务"; exit 1; }
-  systemctl disable shadow-tls.service || { echo "无法取消开机自启"; exit 1; }
-  rm -f /lib/systemd/system/shadow-tls.service
-  rm -f /usr/local/bin/shadow-tls
-  echo "Shadow-TLS 已卸载"
+  # systemctl stop shadow-tls.service || { echo "无法停止 Shadow-TLS 服务"; exit 1; }
+  # systemctl disable shadow-tls.service || { echo "无法取消开机自启"; exit 1; }
+  # rm -f /lib/systemd/system/shadow-tls.service
+  # rm -f /usr/local/bin/shadow-tls
+  # echo "Shadow-TLS 已卸载"
+
+  if [[ "$service_type" == "ss-rust" ]]; then
+    systemctl stop shadow-tls-ss-rust.service || { echo "无法停止 shadow-tls-ss-rust 服务"; exit 1; }
+    systemctl disable shadow-tls-ss-rust.service || { echo "无法取消 shadow-tls-ss-rust 服务开机自启"; exit 1; }
+    rm -f /lib/systemd/system/shadow-tls-ss-rust.service
+    rm -f /usr/local/bin/shadow-tls
+    echo "shadow-TLS ss-rust 已卸载"
+  elif [[ "$service_type" == "snell" ]]; then
+    systemctl stop shadow-tls-snell.service || { echo "无法停止 shadow-tls-snell 服务"; exit 1; }
+    systemctl disable shadow-tls-snell.service || { echo "无法取消 shadow-tls-snell 服务开机自启"; exit 1; }
+    rm -f /lib/systemd/system/shadow-tls-snell.service
+    rm -f /usr/local/bin/shadow-tls
+    echo "shadow-TLS snell 已卸载"
+  elif [[ "$service_type" == "all" ]]; then
+    systemctl stop shadow-tls-ss-rust.service || { echo "无法停止 shadow-tls-ss-rust 服务"; exit 1; }
+    systemctl disable shadow-tls-ss-rust.service || { echo "无法取消 shadow-tls-ss-rust 服务开机自启"; exit 1; }
+    rm -f /lib/systemd/system/shadow-tls-ss-rust.service
+    rm -f /usr/local/bin/shadow-tls
+    echo "shadow-TLS ss-rust 已卸载"
+    echo
+    systemctl stop shadow-tls-snell.service || { echo "无法停止 shadow-tls-snell 服务"; exit 1; }
+    systemctl disable shadow-tls-snell.service || { echo "无法取消 shadow-tls-snell 服务开机自启"; exit 1; }
+    rm -f /lib/systemd/system/shadow-tls-snell.service
+    rm -f /usr/local/bin/shadow-tls
+    echo "shadow-TLS snell 已卸载"
+  fi
 }
 
 # 更新 Shadow-TLS 函数
@@ -198,12 +224,34 @@ update_shadow_tls() {
     echo "当前已是最新版本 (${current_version})，无需更新"
     return
   fi
-  
-  systemctl stop shadow-tls.service || { echo "无法停止 Shadow-TLS 服务"; exit 1; }
-  wget -N --no-check-certificate "https://github.com/ihciah/shadow-tls/releases/download/${latest_version}/shadow-tls-${shadow_tls_type}" -O /usr/local/bin/shadow-tls
-  chmod +x /usr/local/bin/shadow-tls
-  systemctl restart shadow-tls.service || { echo "无法重启 Shadow-TLS 服务"; exit 1; }
-  echo "Shadow-TLS 已更新到版本 ${latest_version}"
+
+  if [[ "$service_type" == "ss-rust" ]]; then
+    systemctl stop shadow-tls-ss-rust.service || { echo "无法停止 Shadow-TLS ss-rust 服务"; exit 1; }
+    wget -N --no-check-certificate "https://github.com/ihciah/shadow-tls/releases/download/${latest_version}/shadow-tls-${shadow_tls_type}" -O /usr/local/bin/shadow-tls
+    chmod +x /usr/local/bin/shadow-tls
+    systemctl restart shadow-tls-ss-rust.service || { echo "无法重启 Shadow-TLS ss-rust 服务"; exit 1; }
+    echo "Shadow-TLS 已更新到版本 ${latest_version}"
+  elif [[ "$service_type" == "snell" ]]; then
+    systemctl stop shadow-tls-snell.service || { echo "无法停止 Shadow-TLS snell 服务"; exit 1; }
+    wget -N --no-check-certificate "https://github.com/ihciah/shadow-tls/releases/download/${latest_version}/shadow-tls-${shadow_tls_type}" -O /usr/local/bin/shadow-tls
+    chmod +x /usr/local/bin/shadow-tls
+    systemctl restart shadow-tls-snell.service || { echo "无法重启 Shadow-TLS snell 服务"; exit 1; }
+    echo "Shadow-TLS 已更新到版本 ${latest_version}"
+  elif [[ "$service_type" == "all" ]]; then
+    systemctl stop shadow-tls-ss-rust.service || { echo "无法停止 Shadow-TLS ss-rust 服务"; exit 1; }
+    systemctl stop shadow-tls-snell.service || { echo "无法停止 Shadow-TLS snell 服务"; exit 1; }
+    wget -N --no-check-certificate "https://github.com/ihciah/shadow-tls/releases/download/${latest_version}/shadow-tls-${shadow_tls_type}" -O /usr/local/bin/shadow-tls
+    chmod +x /usr/local/bin/shadow-tls
+    systemctl restart shadow-tls-ss-rust.service || { echo "无法重启 Shadow-TLS ss-rust 服务"; exit 1; }
+    systemctl restart shadow-tls-snell.service || { echo "无法重启 Shadow-TLS snell 服务"; exit 1; }
+    echo "Shadow-TLS 已更新到版本 ${latest_version}"
+  fi
+
+  # systemctl stop shadow-tls.service || { echo "无法停止 Shadow-TLS 服务"; exit 1; }
+  # wget -N --no-check-certificate "https://github.com/ihciah/shadow-tls/releases/download/${latest_version}/shadow-tls-${shadow_tls_type}" -O /usr/local/bin/shadow-tls
+  # chmod +x /usr/local/bin/shadow-tls
+  # systemctl restart shadow-tls.service || { echo "无法重启 Shadow-TLS 服务"; exit 1; }
+  # echo "Shadow-TLS 已更新到版本 ${latest_version}"
 }
 
 # 安装 Shadow-TLS 函数
@@ -306,8 +354,8 @@ EOF
 
   # 启动并启用 Shadow-TLS 服务
   systemctl daemon-reload || { echo "无法重载 daemon"; exit 1; }
-  systemctl start shadow-tls.service || { echo "无法启动 Shadow-TLS 服务"; exit 1; }
-  systemctl enable shadow-tls.service || { echo "无法设置开机自启"; exit 1; }
+  systemctl start shadow-tls-${protocol_type}.service || { echo "无法启动 Shadow-TLS $protocol_type 服务"; exit 1; }
+  systemctl enable shadow-tls-${protocol_type}.service || { echo "无法设置开机自启"; exit 1; }
 
   echo "Shadow-TLS 安装成功，版本: ${latest_version}"
   echo "客户端连接信息: "
@@ -345,11 +393,41 @@ show_menu() {
             show_menu
             ;;
         2)
+            read -r -p "请选择要更新的 Shadow-TLS 服务类型: [1] ss-rust (默认) [2] snell [3] all: " update_choice
+            case $update_choice in
+              1)
+                service_type=ss-rust
+                ;;
+              2)
+                service_type=snell
+                ;;
+              3)
+                service_type=all
+                ;;
+              *)
+                service_type=ss-rust
+                ;;
+            esac
             update_shadow_tls
             echo && printf "* 按回车返回主菜单 *" && read
             show_menu
             ;;
         3)
+            read -r -p "请选择要卸载的 Shadow-TLS 服务类型: [1] ss-rust (默认) [2] snell [3] all: " uninstall_choice
+            case $uninstall_choice in
+              1)
+                service_type=ss-rust
+                ;;
+              2)
+                service_type=snell
+                ;;
+              3)
+                service_type=all
+                ;;
+              *)
+                service_type=ss-rust
+                ;;
+            esac
             uninstall_shadow_tls
             echo && printf "* 按回车返回主菜单 *" && read
             show_menu
@@ -363,10 +441,28 @@ show_menu() {
 
 # 处理传入参数
 if [[ $1 == "uninstall" ]]; then
+  if [[ $2 == "ss-rust" ]]; then
+    service_type=ss-rust
+  elif [[ $2 == "snell" ]]; then
+    service_type=snell
+  elif [[ $2 == "all" ]]; then
+    service_type=all
+  else
+    service_type=ss-rust
+  fi
   uninstall_shadow_tls
   exit 0
 fi
 if [[ $1 == "update" ]]; then
+  if [[ $2 == "ss-rust" ]]; then
+    service_type=ss-rust
+  elif [[ $2 == "snell" ]]; then
+    service_type=snell
+  elif [[ $2 == "all" ]]; then
+    service_type=all
+  else
+    service_type=ss-rust
+  fi
   update_shadow_tls
   exit 0
 fi
