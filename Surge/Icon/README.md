@@ -8,4 +8,8 @@
 
 感谢[@Saw1g88](https://github.com/Saw1g88)大佬的[图标](https://github.com/Saw1g88/Saw/tree/main/Icon)
 
+感谢[@cc63](https://github.com/cc63)大佬的[图标](https://github.com/cc63/ICON/tree/main)
+
+感谢[@$H!NDGEKYUME](https://github.com/shindgewongxj)大佬的[图标](https://github.com/shindgewongxj/WHATSINStash/tree/main/iconset)
+
 以上排名不分先后
