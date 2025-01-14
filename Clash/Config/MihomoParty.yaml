@@ -1,11 +1,11 @@
 # 基于@Repcz更改
 #
-# last updated: 2025/1/13 17:22
+# last updated: 2025-01-14 20:34:53
 #
 # ================
 
 # 混合端口 HTTP和SOCKS5用一个端口
-mixed-port: 7897
+mixed-port: 7890
 # TCP 并发连接所有 IP, 将使用最快握手的 TCP
 tcp-concurrent: true
 # 允许局域网的连接（可用来共享代理）
@@ -78,15 +78,15 @@ dns:
 # 策略组引用相关参数
 pg: &pg {type: select, proxies: [Proxy, Hong Kong, United States, Singapore, Japan, Taiwan, DIRECT]}
 # 订阅更新和延迟测试相关参数
-p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://latency-test.skk.moe/endpoint, interval: 1800}}
+p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://1.1.1.1/generate_204, interval: 1800}}
 # 自动选择策略组：选取延迟最低节点
-auto: &auto {type: url-test, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, tolerance: 50, include-all-providers: true}
+auto: &auto {type: url-test, lazy: true, url: http://1.1.1.1/generate_204, interval: 300, tolerance: 50, include-all-providers: true}
 # 手动选择策略组：手动选择想要的节点/策略组
 select: &select {type: select, include-all-providers: true}
 # 故障回退策略组：策略组将按顺序选择你列表中第一个可用的节点
-fallback: &fallback {type: fallback, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+fallback: &fallback {type: fallback, lazy: true, url: http://1.1.1.1/generate_204, interval: 300, include-all-providers: true}
 # 负载均衡策略组：不同的请求将使用不同的代理节点
-load-balance: &load-balance {type: load-balance, lazy: true, strategy: consistent-hashing, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+load-balance: &load-balance {type: load-balance, lazy: true, strategy: consistent-hashing, url: http://1.1.1.1/generate_204, interval: 300, include-all-providers: true}
 # classical规则相关
 c: &c {type: http, behavior: classical, interval: 86400}
 # domain规则相关
