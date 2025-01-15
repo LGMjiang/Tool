@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025/1/13 17:22
+# last updated: 2025-01-15 15:54:34
 #
 # ================
 
@@ -78,15 +78,15 @@ dns:
 # 策略组引用相关参数
 pg: &pg {type: select, proxies: [Proxy, Hong Kong, United States, Singapore, Japan, Taiwan, DIRECT]}
 # 订阅更新和延迟测试相关参数
-p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://latency-test.skk.moe/endpoint, interval: 1800}}
+p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://1.1.1.1/generate_204, interval: 1800}}
 # 自动选择策略组：选取延迟最低节点
-auto: &auto {type: url-test, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, tolerance: 50, include-all-providers: true}
+auto: &auto {type: url-test, lazy: true, url: http://1.1.1.1/generate_204, interval: 300, tolerance: 50, include-all-providers: true}
 # 手动选择策略组：手动选择想要的节点/策略组
 select: &select {type: select, include-all-providers: true}
 # 故障回退策略组：策略组将按顺序选择你列表中第一个可用的节点
-fallback: &fallback {type: fallback, lazy: true, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+fallback: &fallback {type: fallback, lazy: true, url: http://1.1.1.1/generate_204, interval: 300, include-all-providers: true}
 # 负载均衡策略组：不同的请求将使用不同的代理节点
-load-balance: &load-balance {type: load-balance, lazy: true, strategy: consistent-hashing, url: http://latency-test.skk.moe/endpoint, interval: 300, include-all-providers: true}
+load-balance: &load-balance {type: load-balance, lazy: true, strategy: consistent-hashing, url: http://1.1.1.1/generate_204, interval: 300, include-all-providers: true}
 # classical规则相关
 c: &c {type: http, behavior: classical, interval: 86400}
 # domain规则相关
@@ -220,37 +220,8 @@ proxies:
     password: ""
     version: 3
 
-- name: "🇯🇵Akile-JPH 🅑"
-  type: ss
-  server: 
-  port: 
-  cipher: 2022-blake3-aes-256-gcm
-  password: ""
-  udp: true
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: ""
-    password: ""
-    version: 3
-
-- name: "🇯🇵JPH-ClawHK 🅒"
-  type: ss
-  server: 
-  port: 
-  cipher: 2022-blake3-aes-256-gcm
-  password: ""
-  udp: true
-  dialer-proxy: 🇭🇰Claw 🅑
-  plugin: shadow-tls
-  client-fingerprint: chrome
-  plugin-opts:
-    host: ""
-    password: ""
-    version: 3
-
 proxy-providers:
-  Subscribe: {<<: *p, path: ./proxy-providers/Sub.yaml, url:}
+  Subscribe: {<<: *p, path: ./proxy-providers/SubFacMata.yaml, url:}
     # 在此将"http://your-service-provider"替换为你的机场订阅，推荐使用base64或者node list
     # Sub-Store生成的链接,可以直接替换上述url引号中的部分,具体见Sub-Store教程         
 
@@ -258,7 +229,7 @@ proxy-groups:
 
   #分流分组
 
-  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰HKSM-ClawHK 🅒, 🇭🇰HKG1-ClawHK 🅒, 🇭🇰HKG2-ClawHK 🅒, 🇯🇵JPH-ClawHK 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Akile HKSM 🅑, 🇭🇰Akile HKG1 🅑, 🇭🇰Akile-HKG2 🅑, 🇯🇵Akile-JPH 🅑, 🇭🇰Akile HKSM hy2 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
+  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰HKSM-ClawHK 🅒, 🇭🇰HKG1-ClawHK 🅒, 🇭🇰HKG2-ClawHK 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Akile HKSM 🅑, 🇭🇰Akile HKG1 🅑, 🇭🇰Akile-HKG2 🅑, 🇭🇰Akile HKSM hy2 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
 
   - {name: Telegram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
 
@@ -276,7 +247,7 @@ proxy-groups:
 
   - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Pixiv.png}
 
-  - {name: DMM, type: select, proxies: [Proxy, Japan, 🇯🇵JPH-ClawHK 🅒, 🇯🇵Akile-JPH 🅑], icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/DMM.png}
+  - {name: DMM, type: select, proxies: [Proxy, Japan], icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/DMM.png}
 
   - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Reddit.png}
 
