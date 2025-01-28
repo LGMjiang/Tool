@@ -76,3 +76,13 @@ DOMAIN-SUFFIX,music.mefun.org
 
 # 星云Nebula
 DOMAIN-SUFFIX,emby.nebula-media.org
+
+# DoveNest(鸽巢)
+DOMAIN-SUFFIX,media.doven.tv
+
+# 二次元Emby
+DOMAIN-SUFFIX,media.nijigem.by
+
+# Nanflix(天南)
+DOMAIN-SUFFIX,us.nanflix.net
+
