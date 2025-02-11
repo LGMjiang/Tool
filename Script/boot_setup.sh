@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/18
+# last updated:2025/02/11
 
 # 更新软件和源
 echo "更新软件源和软件..."
@@ -126,7 +126,14 @@ fi
 # 文件准备完成，打开文件供用户编辑
 echo "请编辑 $AUTHORIZED_KEYS_FILE 文件（保存后继续执行脚本）"
 sleep 1
-vim "$AUTHORIZED_KEYS_FILE"
+# 检查 vim 是否存在，存在则用 vim，否则用 vi
+if command -v vim >/dev/null 2>&1; then
+  editor="vim"
+else
+  editor="vi"
+fi
+# 使用选择的编辑器打开文件
+$editor "$AUTHORIZED_KEYS_FILE"
 
 # 编辑完成，继续执行脚本后续操作
 echo "$AUTHORIZED_KEYS_FILE 文件编辑完成，继续执行脚本..."
