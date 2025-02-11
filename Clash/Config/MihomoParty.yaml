@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-01-15 15:54:34
+# last updated: 2025-02-11 09:48:43
 #
 # ================
 
@@ -119,7 +119,7 @@ proxies:
     password: ""
     version: 3
 
-- name: "🇭🇰Akile-HKG2 🅑"
+- name: "🇭🇰Akile HKG2 🅑"
   type: ss
   server: 
   port: 
@@ -220,6 +220,35 @@ proxies:
     password: ""
     version: 3
 
+- name: "🇭🇰Halo 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇭🇰Halo-ClawHK 🅒"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  dialer-proxy: 🇭🇰Claw 🅑
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
 proxy-providers:
   Subscribe: {<<: *p, path: ./proxy-providers/SubFacMata.yaml, url:}
     # 在此将"http://your-service-provider"替换为你的机场订阅，推荐使用base64或者node list
@@ -229,7 +258,7 @@ proxy-groups:
 
   #分流分组
 
-  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰HKSM-ClawHK 🅒, 🇭🇰HKG1-ClawHK 🅒, 🇭🇰HKG2-ClawHK 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Akile HKSM 🅑, 🇭🇰Akile HKG1 🅑, 🇭🇰Akile-HKG2 🅑, 🇭🇰Akile HKSM hy2 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
+  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰Halo-ClawHK 🅒, 🇭🇰HKSM-ClawHK 🅒, 🇭🇰HKG1-ClawHK 🅒, 🇭🇰HKG2-ClawHK 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Halo 🅑, 🇭🇰Akile HKSM 🅑, 🇭🇰Akile HKG1 🅑, 🇭🇰Akile HKG2 🅑, 🇭🇰Akile HKSM hy2 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
 
   - {name: Telegram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
 
@@ -348,6 +377,12 @@ rule-providers:
   # CNDomain
   ChinaDomain: {<<: *c, format: text, path: ./rule-providers/ChinaDomain.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/ChinaDomain.list}
 
+  # Emby-FacMata
+  FacMataEmby: {type: file, behavior: classical, interval: 86400, format: text, path: ./rule-providers/FacMataEmby.list}
+
+  # NonEmby(JMS,Nebula)
+  NonHKEmby: {type: file, behavior: classical, interval: 86400, format: text, path: ./rule-providers/NonHKEmby.list}
+
   # Emby
   Emby: {<<: *c, format: text, path: ./rule-providers/Emby.list,  url: https://github.com/LGMjiang/Tool/raw/main/Surge/Rule/Emby.list}
 
@@ -380,17 +415,15 @@ rules:
   - RULE-SET,TikTok,TikTok
   - RULE-SET,Steam,Game
   - RULE-SET,Epic,Game
+  - RULE-SET,FacMataEmby,DIRECT
+  - RULE-SET,NonHKEmby,🇸🇬Claw 🅑
   - RULE-SET,Emby,Emby
-  - DOMAIN-SUFFIX,aca.best,Proxy
-  - DOMAIN-SUFFIX,acaisbest.com,Proxy
-  - DOMAIN-SUFFIX,122777.xyz,Proxy
-  - DOMAIN-SUFFIX,12345.al,Proxy
   - RULE-SET,Apple,Apple
   - RULE-SET,StreamMedia,StreamMedia
   - DOMAIN-SUFFIX,op.gg,DIRECT
   - DOMAIN,opgg-static.akamaized.net,DIRECT
   - RULE-SET,Global,Global
-  - DOMAIN-SUFFIX,250941.xyz,DIRECT
+#  - DOMAIN-SUFFIX,250941.xyz,DIRECT
   - RULE-SET,ChinaDomain,DIRECT
   - RULE-SET,Lan,DIRECT
   - GEOIP,CN,DIRECT
