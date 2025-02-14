@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2025/02/11
+# last updated:2025/02/14
 
 # 更新软件和源
 echo "更新软件源和软件..."
@@ -21,6 +21,15 @@ for cmd in wget tar curl xz unzip jq ufw; do
     fi
   fi
 done
+
+# 是否为NAT机器的选择
+read -r -p "是否是NAT机器? (y/N): " is_nat_machine
+if [[ ${is_nat_machine,,} == "y" ]]; then
+  echo "非NAT机器，跳过UFW相关配置。"
+  is_nat_machine=true
+else
+  is_nat_machine=false
+fi
 
 # SSH 设置
 SSH_CONF_DIR="/etc/ssh/sshd_config.d"
@@ -159,10 +168,12 @@ if [[ $ufw_status == *"Status: inactive"* ]]; then
   # 允许 SSH 端口
   echo "开放 SSH 端口: $SSH_PORT"
   ufw allow $SSH_PORT comment "SSH"
-
-  # 允许 HTTP 和 HTTPS 端口
-  ufw allow 80
-  ufw allow 443
+  
+  if [ "$is_nat_machine" == false ]; then
+    # 允许 HTTP 和 HTTPS 端口
+    ufw allow 80
+    ufw allow 443
+  fi
 
   # 启动 UFW 防火墙，避免提示 y/n
   echo "启用 UFW 防火墙..."
