@@ -42,12 +42,22 @@ AUTHORIZED_KEYS_FILE="$HOME/.ssh/authorized_keys"
 while true; do
   read -p "请输入新的 SSH 端口号 (建议1024-65535之间): " SSH_PORT
 
-  # 检查输入的端口号是否有效
-  if [[ $SSH_PORT =~ ^[0-9]+$ ]] && [ "$SSH_PORT" -ge 1024 ] && [ "$SSH_PORT" -le 65535 ]; then
-    echo "有效的端口号: $SSH_PORT"
-    break  # 跳出循环
-  else
-    echo "无效的端口号，请输入1024-65535之间的数字。"
+  if [[ ${is_nat_machine,,} == true ]]; then
+    # 检查输入的端口号是否有效
+    if [[ $SSH_PORT =~ ^[0-9]+$ ]] && [ "$SSH_PORT" -ge 1 ] && [ "$SSH_PORT" -le 65535 ]; then
+      echo "有效的端口号: $SSH_PORT"
+      break  # 跳出循环
+    else
+      echo "无效的端口号，请输入1-65535之间的数字。"
+    fi
+  elif [[ ${is_nat_machine,,} == false ]]; then
+    # 检查输入的端口号是否有效
+    if [[ $SSH_PORT =~ ^[0-9]+$ ]] && [ "$SSH_PORT" -ge 1024 ] && [ "$SSH_PORT" -le 65535 ]; then
+      echo "有效的端口号: $SSH_PORT"
+      break  # 跳出循环
+    else
+      echo "无效的端口号，请输入1024-65535之间的数字。"
+    fi
   fi
 done
 
