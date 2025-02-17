@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-02-14 20:45:32
+# last updated: 2025-02-17 22:34:41
 #
 # ================
 
@@ -278,6 +278,35 @@ proxies:
     password: ""
     version: 3
 
+- name: "🇯🇵CheapHost 🅑"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
+- name: "🇯🇵CheapHost 🅒"
+  type: ss
+  server: 
+  port: 
+  cipher: 2022-blake3-aes-256-gcm
+  password: ""
+  udp: true
+  dialer-proxy: 🇭🇰Claw 🅑
+  plugin: shadow-tls
+  client-fingerprint: chrome
+  plugin-opts:
+    host: ""
+    password: ""
+    version: 3
+
 proxy-providers:
   Subscribe: {<<: *p, path: ./proxy-providers/SubFacMata.yaml, url:}
     # 在此将"http://your-service-provider"替换为你的机场订阅，推荐使用base64或者node list
@@ -287,7 +316,7 @@ proxy-groups:
 
   #分流分组
 
-  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰Halo 🅒, 🇭🇰Akile-SM 🅒, 🇭🇰Akile-BGP 🅒, 🇭🇰Akile-Lite 🅒, 🇺🇸ByteVirt 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Halo 🅑, 🇭🇰Akile-SM 🅑, 🇭🇰Akile-BGP 🅑, 🇭🇰Akile-Lite 🅑, 🇭🇰Akile-SM-hy2 🅑, 🇺🇸ByteVirt 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
+  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰Halo 🅒, 🇭🇰Akile-SM 🅒, 🇭🇰Akile-BGP 🅒, 🇭🇰Akile-Lite 🅒, 🇺🇸ByteVirt 🅒, 🇯🇵CheapHost 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Halo 🅑, 🇭🇰Akile-SM 🅑, 🇭🇰Akile-BGP 🅑, 🇭🇰Akile-Lite 🅑, 🇭🇰Akile-SM-hy2 🅑, 🇺🇸ByteVirt 🅑, 🇯🇵CheapHost 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
 
   - {name: Telegram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
 
@@ -305,7 +334,7 @@ proxy-groups:
 
   - {name: Pixiv, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Pixiv.png}
 
-  - {name: DMM, type: select, proxies: [Proxy, Japan], icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/DMM.png}
+  - {name: DMM, type: select, proxies: [Proxy, 🇯🇵CheapHost 🅒, 🇯🇵CheapHost 🅑, Japan], icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Surge/Icon/DMM.png}
 
   - {name: Reddit, <<: *pg, icon: https://raw.githubusercontent.com/LGMjiang/Tool/main/Clash/Icon/Reddit.png}
 
