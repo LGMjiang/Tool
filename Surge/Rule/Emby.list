@@ -82,6 +82,11 @@ DOMAIN-SUFFIX,media.doven.tv
 
 # 二次元Emby
 DOMAIN-SUFFIX,media.nijigem.by
+DOMAIN-SUFFIX,cdn.bgp.yt
+DOMAIN-SUFFIX,default.cdn.bgp.yt
+DOMAIN-SUFFIX,ct.cdn.bgp.yt
+DOMAIN-SUFFIX,us-w.cdn.bgp.yt
+DOMAIN-SUFFIX,cu.cdn.bgp.yt
 
 # Nanflix(天南)
 DOMAIN-SUFFIX,us.nanflix.net
