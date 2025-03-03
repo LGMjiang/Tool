@@ -78,7 +78,12 @@ DOMAIN-SUFFIX,music.mefun.org
 DOMAIN-SUFFIX,emby.nebula-media.org
 
 # DoveNest(鸽巢)
+DOMAIN-SUFFIX,doven.tv
+DOMAIN-SUFFIX,mediacf.doven.tv
 DOMAIN-SUFFIX,media.doven.tv
+DOMAIN-SUFFIX,4837.media.doven.tv
+DOMAIN-SUFFIX,9929.media.doven.tv
+DOMAIN-SUFFIX,awssg.media.doven.tv
 
 # 二次元Emby
 DOMAIN-SUFFIX,media.nijigem.by
