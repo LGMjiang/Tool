@@ -1,6 +1,6 @@
 # えむっ娘ラボ
 DOMAIN-SUFFIX,mko-labo.net
-# イラマチオ研究所（深喉研究所）
+# イラマチオ研究所(深喉研究所)
 DOMAIN-SUFFIX,irm.avlabo.com
 # BBM
 DOMAIN-SUFFIX,bbmovies.jp
@@ -34,9 +34,9 @@ DOMAIN-SUFFIX,premium-beauty.com
 DOMAIN-SUFFIX,km-produce.com
 # kawaii*
 DOMAIN-SUFFIX,kawaiikawaii.jp
-# Prestige（蚊香社）
+# Prestige(蚊香社)
 DOMAIN-SUFFIX,prestige-av.com
-# WAAP GROUP（旗下有DREAM TICKET ドリームチケット）
+# WAAP GROUP(旗下有DREAM TICKET ドリームチケット)
 DOMAIN-SUFFIX,waap.co.jp
 # 无垢
 DOMAIN-SUFFIX,muku.tv
@@ -128,7 +128,7 @@ DOMAIN-SUFFIX,sokmil.com
 DOMAIN-SUFFIX,toyohiko-project.com
 # Dogma
 DOMAIN-SUFFIX,dogma.co.jp
-# CineMagic（シネマジック）（CMV，CMN）
+# CineMagic(シネマジック)(CMV,CMN)
 DOMAIN-SUFFIX,cinemagic.co.jp
 # Collector
 DOMAIN-SUFFIX,collector-web.com
@@ -136,7 +136,13 @@ DOMAIN-SUFFIX,collector-web.com
 DOMAIN-SUFFIX,en.jukujo-club.com
 # ARZON
 DOMAIN-SUFFIX,arzon.jp
-# Xcity（好像有高清封面）
+# Xcity(好像有高清封面)
 DOMAIN-SUFFIX,xcity.jp
 # 好像有高清封面
 DOMAIN-SUFFIX,tenhow.net
+# LINX(查看女优的信息)
+DOMAIN-SUFFIX,linx.live
+# Team LINX(查看女优的信息)
+DOMAIN-SUFFIX,pub.linx.live
+# Blog LINX(LINX中女优的Blog)
+DOMAIN-SUFFIX,blog.jp
