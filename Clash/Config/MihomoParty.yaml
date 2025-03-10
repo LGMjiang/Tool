@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-02-17 22:34:41
+# last updated: 2025-03-10 18:02:48
 #
 # ================
 
@@ -308,7 +308,7 @@ proxies:
     version: 3
 
 proxy-providers:
-  Subscribe: {<<: *p, path: ./proxy-providers/SubFacMata.yaml, url:}
+  Subscribe: {<<: *p, path: ./proxy-providers/SubYuShe.yaml, url:}
     # 在此将"http://your-service-provider"替换为你的机场订阅，推荐使用base64或者node list
     # Sub-Store生成的链接,可以直接替换上述url引号中的部分,具体见Sub-Store教程         
 
@@ -354,7 +354,7 @@ proxy-groups:
 
   - {name: Game, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png}
 
-  - {name: Emby, type: select, proxies: [Proxy, DIRECT], include-all-providers: true, filter: '(Emby|EMBY)', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png}
+  - {name: Emby, type: select, proxies: [Proxy, DIRECT], include-all-providers: true, filter: '(Emby|EMBY|0\.1x)', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png}
 
   - {name: StreamMedia, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Streaming.png}
 
