@@ -1,12 +1,12 @@
 #!/bin/bash
-# last updated:2025/02/14
+# last updated:2025/03/11
 
 # 更新软件和源
 echo "更新软件源和软件..."
 apt update -y && apt upgrade -y
 
 # 检查并自动安装必要工具
-for cmd in wget tar curl xz unzip jq ufw; do
+for cmd in wget tar curl xz unzip jq ufw iperf3; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd 未安装，正在安装..."
     
@@ -183,6 +183,18 @@ if [[ $ufw_status == *"Status: inactive"* ]]; then
     # 允许 HTTP 和 HTTPS 端口
     ufw allow 80
     ufw allow 443
+    ufw allow 5210 comment "iperf3"
+  elif [ "$is_nat_machine" == true ]; then
+    while true; do
+      read -p "请输入 iperf3 监听端口 (建议1024-65535之间): " IPERF3_PORT
+      if [[ $IPERF3_PORT =~ ^[0-9]+$ ]] && [ "$IPERF3_PORT" -ge 1024 ] && [ "$IPERF3_PORT" -le 65535 ]; then
+        echo "有效的端口号: $IPERF3_PORT"
+        break
+      else
+        echo "无效的端口号，请输入1024-65535之间的数字。"
+      fi
+    done
+    ufw allow $IPERF3_PORT comment "iperf3"
   fi
 
   # 启动 UFW 防火墙，避免提示 y/n
