@@ -178,6 +178,24 @@ install_ss() {
     else
       ss_password=$(openssl rand -base64 32)  # 默认情况
     fi
+  elif [[ -n "$ss_password" ]]; then
+    # 选择加密方法
+    echo "选择加密方法:"
+    echo "1. aes-256-gcm"
+    echo "2. chacha20-ietf-poly1305"
+    echo "3. aes-128-gcm"
+    echo "4. 2022-blake3-aes-256-gcm (默认)"
+    echo "5. 2022-blake3-aes-128-gcm"
+    read -r -p "请选择加密方法 [1-5]: " method_choice
+
+    case $method_choice in
+      1) encryption_method="aes-256-gcm" ;;
+      2) encryption_method="chacha20-ietf-poly1305" ;;
+      3) encryption_method="aes-128-gcm" ;;
+      4) encryption_method="2022-blake3-aes-256-gcm" ;;
+      5) encryption_method="2022-blake3-aes-128-gcm" ;;
+      *) echo "无效选择，使用默认 2022-blake3-aes-256-gcm" ; encryption_method="2022-blake3-aes-256-gcm" ;;
+    esac
   fi
 
   # 选择传输模式
