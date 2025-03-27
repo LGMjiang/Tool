@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-03-10 18:02:48
+# last updated: 2025-03-27 19:22:05
 #
 # ================
 
@@ -95,15 +95,15 @@ d: &d {type: http, behavior: domain, interval: 86400}
 i: &i {type: http, behavior: ipcidr, interval: 86400}
 
 proxies:
-- name: "🇭🇰Akile-SM-hy2 🅑"
-  type: hysteria2
-  server: 
-  port: 
-  password: 
-  up: "30 Mbps"
-  down: "100 Mbps"
-  sni: 
-  skip-cert-verify: false
+# - name: "🇭🇰Akile-SM-hy2 🅑"
+#   type: hysteria2
+#   server: 
+#   port: 
+#   password: 
+#   up: "30 Mbps"
+#   down: "100 Mbps"
+#   sni: 
+#   skip-cert-verify: false
 
 - name: "🇭🇰Akile-BGP 🅑"
   type: ss
@@ -316,7 +316,7 @@ proxy-groups:
 
   #分流分组
 
-  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰Halo 🅒, 🇭🇰Akile-SM 🅒, 🇭🇰Akile-BGP 🅒, 🇭🇰Akile-Lite 🅒, 🇺🇸ByteVirt 🅒, 🇯🇵CheapHost 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Halo 🅑, 🇭🇰Akile-SM 🅑, 🇭🇰Akile-BGP 🅑, 🇭🇰Akile-Lite 🅑, 🇭🇰Akile-SM-hy2 🅑, 🇺🇸ByteVirt 🅑, 🇯🇵CheapHost 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
+  - {name: Proxy, type: select, proxies: [Hong Kong, United States, Singapore, Japan, Taiwan, 🇭🇰Halo 🅒, 🇭🇰Akile-SM 🅒, 🇭🇰Akile-BGP 🅒, 🇭🇰Akile-Lite 🅒, 🇺🇸ByteVirt 🅒, 🇯🇵CheapHost 🅒, 🇭🇰Claw 🅑, 🇸🇬Claw 🅑, 🇭🇰Halo 🅑, 🇭🇰Akile-SM 🅑, 🇭🇰Akile-BGP 🅑, 🇭🇰Akile-Lite 🅑, 🇺🇸ByteVirt 🅑, 🇯🇵CheapHost 🅑, DIRECT], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png}
 
   - {name: Telegram, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
 
