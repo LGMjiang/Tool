@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-03-27 19:22:05
+# last updated: 2025-04-18 17:06:05
 #
 # ================
 
@@ -481,7 +481,7 @@ rules:
   - DOMAIN-SUFFIX,op.gg,DIRECT
   - DOMAIN,opgg-static.akamaized.net,DIRECT
   - RULE-SET,Global,Global
-#  - DOMAIN-SUFFIX,250941.xyz,DIRECT
+  - DOMAIN-SUFFIX,250941.xyz,DIRECT
   - RULE-SET,ChinaDomain,DIRECT
   - RULE-SET,Lan,DIRECT
   - GEOIP,CN,DIRECT
