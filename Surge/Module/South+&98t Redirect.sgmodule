@@ -10,4 +10,4 @@
 ^https:\/\/[a-z]*\.?sehuatang\.(net|org)\/(.*) https://sehuatang.net/$2 302
 
 [MITM]
-hostname = %APPEND% hostname = %APPEND% *.south-plus.net,*.soul-plus.net,*.north-plus.net,*.white-plus.net,*.level-plus.net,*.summer-plus.net,*.spring-plus.net,*.snow-plus.net,*.east-plus.net,*.blue-plus.net,*.imoutolove.me,*.south-plus.org,*.sehuatang.org
+hostname = %APPEND% south-plus.net, *.south-plus.net, soul-plus.net, *.soul-plus.net, north-plus.net, *.north-plus.net, white-plus.net, *.white-plus.net, level-plus.net, *.level-plus.net, summer-plus.net, *.summer-plus.net, spring-plus.net, *.spring-plus.net, snow-plus.net,*.snow-plus.net, east-plus.net, *.east-plus.net, blue-plus.net, *.blue-plus.net, imoutolove.me, *.imoutolove.me, south-plus.org, *.south-plus.org, sehuatang.org, *.sehuatang.org
