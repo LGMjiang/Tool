@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-04-18 17:06:05
+# last updated: 2025-05-09 17:06:04
 #
 # ================
 
@@ -346,7 +346,7 @@ proxy-groups:
 
   - {name: OpenAI, type: select, proxies: [Proxy, Hong Kong, United States, Singapore, Japan, Taiwan, 🇺🇸ByteVirt 🅒, 🇺🇸ByteVirt 🅑], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png}
 
-  - {name: TikTok, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png}
+  - {name: TikTok, type: select, proxies: [Proxy, United States, Singapore, Japan, 🇯🇵CheapHost 🅒, 🇯🇵CheapHost 🅑, 🇺🇸ByteVirt 🅒, 🇺🇸ByteVirt 🅑], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png}
 
   - {name: Apple, <<: *pg, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png}
 
