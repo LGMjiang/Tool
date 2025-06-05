@@ -69,7 +69,7 @@ DOMAIN-SUFFIX,tanhuatv.site
 IP-CIDR,152.53.67.239/32,no-resolve
 
 # HKA
-DOMAIN-SUFFIX,hka-emby3.aliz.work
+DOMAIN-SUFFIX,hka-emby.aliz.work
 
 # 未响音乐
 DOMAIN-SUFFIX,music.mefun.org
