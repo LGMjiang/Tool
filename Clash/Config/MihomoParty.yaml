@@ -1,6 +1,6 @@
 # 基于@Repcz更改
 #
-# last updated: 2025-05-09 17:06:04
+# last updated: 2025-06-16 16:12:33
 #
 # ================
 
@@ -362,15 +362,15 @@ proxy-groups:
 
   #节点地区分组
 
-  - {name: Hong Kong, <<: *fallback, filter: '^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png}
+  - {name: Hong Kong, <<: *auto, filter: '^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png}
 
-  - {name: United States, <<: *fallback, filter: '^(?=.*((?i)🇺🇸|美国|(\b(US|USA|United States)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png}
+  - {name: United States, <<: *auto, filter: '^(?=.*((?i)🇺🇸|美国|(\b(US|USA|United States)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png}
 
-  - {name: Singapore, <<: *fallback, filter: '^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png}
+  - {name: Singapore, <<: *auto, filter: '^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png}
 
-  - {name: Japan, <<: *fallback, filter: '^(?=.*((?i)🇯🇵|日本|(\b(JP|Japan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png}
+  - {name: Japan, <<: *auto, filter: '^(?=.*((?i)🇯🇵|日本|(\b(JP|Japan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png}
 
-  - {name: Taiwan, <<: *fallback, filter: '^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png}
+  - {name: Taiwan, <<: *auto, filter: '^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)劫持|家宽|Lite|lite|LITE|Home|home|HOME|IEPL|iepl|Emby|EBMY|((0\.\d)|(\d\.0)))).*$', icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png}
 
 rule-providers:
 
