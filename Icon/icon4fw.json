@@ -1,0 +1,14 @@
+{
+  "name": "icon_fw",
+  "description": "icon4forward",
+  "icons": [
+    {
+      "name": "infinity",
+      "url": "https://raw.githubusercontent.com/LGMjiang/Tool/refs/heads/main/Icon/infinity.png"
+    },
+    {
+      "name": "infinity1",
+      "url": "https://raw.githubusercontent.com/LGMjiang/Tool/refs/heads/main/Icon/infinity1.png"
+    }
+  ]
+}
