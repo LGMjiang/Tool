@@ -1,3 +1,5 @@
+# last update 2025-09-15 15:40:26
+
 # えむっ娘ラボ
 DOMAIN-SUFFIX,mko-labo.net
 # イラマチオ研究所(深喉研究所)
@@ -20,6 +22,8 @@ DOMAIN-SUFFIX,ideapocket.com
 DOMAIN-SUFFIX,s1s1s1.com
 # SOD(SOFT ON DEMAND)
 DOMAIN-SUFFIX,sod.co.jp
+# SOD日刊
+DOMAIN-SUFFIX,news.sod.co.jp
 # Madonna
 DOMAIN-SUFFIX,madonna-av.com
 # FaleNO
@@ -72,6 +76,24 @@ DOMAIN-SUFFIX,miman.jp
 DOMAIN-SUFFIX,kirakira-av.com
 # BeFree
 DOMAIN-SUFFIX,befreebe.com
+# Aurora Project
+DOMAIN-SUFFIX,aurora-pro.com
+# センタービレッジ
+DOMAIN-SUFFIX,centervillage.co.jp
+# DANDY（SOD Group）
+DOMAIN-SUFFIX,choi-waru.com
+# OFFICE K’S
+DOMAIN-SUFFIX,ks-p.com
+# グローバルメディアアネックス
+DOMAIN-SUFFIX,gme-inc.net
+# ROOKIE
+DOMAIN-SUFFIX,rookie-av.jp
+# M's Video Group
+DOMAIN-SUFFIX,mvg.jp
+# Hunter
+DOMAIN-SUFFIX,hhh-av.com
+# 妄想族
+DOMAIN-SUFFIX,mousouzoku-av.com
 # 痴女天堂
 DOMAIN-SUFFIX,bi-av.com
 # av-event
