@@ -1,4 +1,4 @@
-# last update 2025-09-15 15:40:26
+# last update 2025-09-20 11:43:22
 
 # えむっ娘ラボ
 DOMAIN-SUFFIX,mko-labo.net
@@ -94,6 +94,11 @@ DOMAIN-SUFFIX,mvg.jp
 DOMAIN-SUFFIX,hhh-av.com
 # 妄想族
 DOMAIN-SUFFIX,mousouzoku-av.com
+# ひよこ
+DOMAIN-SUFFIX,hiyoko-av.com
+# レイディックス（Radix）
+DOMAIN-SUFFIX,radix-net.com
+DOMAIN-SUFFIX,up-tight.com
 # 痴女天堂
 DOMAIN-SUFFIX,bi-av.com
 # av-event
