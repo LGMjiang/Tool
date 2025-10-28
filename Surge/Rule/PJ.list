@@ -1,4 +1,4 @@
-# last update 2025-10-26 12:51:33
+# last update 2025-10-29 07:23:44
 
 # えむっ娘ラボ
 DOMAIN-SUFFIX,mko-labo.net
@@ -28,6 +28,8 @@ DOMAIN-SUFFIX,news.sod.co.jp
 DOMAIN-SUFFIX,madonna-av.com
 # FaleNO
 DOMAIN-SUFFIX,faleno.jp
+# FaleNO Group
+DOMAIN-SUFFIX,falenogroup.com
 # Dahlia
 DOMAIN-SUFFIX,dahlia-av.jp
 # Attackers
@@ -112,6 +114,10 @@ DOMAIN-SUFFIX,aroma-p.com
 DOMAIN-SUFFIX,nakajimaweb.com
 # クリスタル映像(Crystal Eizou)
 DOMAIN-SUFFIX,crystal-eizou.jp
+# ROCKET
+DOMAIN-SUFFIX,rocket-inc.net
+# HMN WORKS
+DOMAIN-SUFFIX,hmnworks.net
 # 痴女天堂
 DOMAIN-SUFFIX,bi-av.com
 # av-event
@@ -188,3 +194,5 @@ DOMAIN-SUFFIX,linx.live
 DOMAIN-SUFFIX,pub.linx.live
 # Blog LINX(LINX中女优的Blog)
 DOMAIN-SUFFIX,blog.jp
+# AvFan(查看女优的信息)
+DOMAIN-SUFFIX,avfan.mixh.jp
