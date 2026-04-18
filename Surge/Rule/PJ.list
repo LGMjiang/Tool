@@ -1,4 +1,4 @@
-# last update 2026-03-29 19:33:34
+# last update 2026-04-18 15:06:36
 
 # えむっ娘ラボ
 DOMAIN-SUFFIX,mko-labo.net
@@ -62,7 +62,7 @@ DOMAIN-SUFFIX,wanz-factory.com
 DOMAIN-SUFFIX,honnaka.jp
 # Fitch
 DOMAIN-SUFFIX,fitch-av.com
-# 溜池ゴロー
+# TAMEIKE(溜池ゴロー)
 DOMAIN-SUFFIX,tameikegoro.jp
 # Das!
 DOMAIN-SUFFIX,dasdas.jp
@@ -138,6 +138,10 @@ DOMAIN-SUFFIX,marlomedia.jp
 DOMAIN-SUFFIX,manji-group.com
 # SCRUM（PAIN系列）
 DOMAIN-SUFFIX,scrum-web.jp
+# マックスエー
+DOMAIN-SUFFIX,max-a.co.jp
+# 変態紳士倶楽部
+DOMAIN-SUFFIX,to-satsu.com
 # av-event
 DOMAIN-SUFFIX,av-event.jp
 # trauma art
