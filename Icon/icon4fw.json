@@ -13,6 +13,10 @@
     {
       "name": "forward",
       "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Icon/forward.png"
+    },
+    {
+      "name": "shadow",
+      "url": "https://raw.githubusercontent.com/LGMjiang/Tool/main/Icon/shadow.png"
     }
   ]
 }
