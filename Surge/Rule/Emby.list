@@ -1,5 +1,4 @@
 # 终点站
-DOMAIN-SUFFIX,emby.wtf
 DOMAIN-SUFFIX,pub1.emby.wtf
 DOMAIN-SUFFIX,pub2.emby.wtf
 DOMAIN-SUFFIX,pub3.emby.wtf
@@ -9,9 +8,11 @@ DOMAIN-SUFFIX,pub3cf.emby.wtf
 DOMAIN-SUFFIX,pub1back.emby.wtf
 DOMAIN-SUFFIX,pub2back.emby.wtf
 DOMAIN-SUFFIX,pub3back.emby.wtf
+DOMAIN-SUFFIX,c.emby.wtf
+DOMAIN-SUFFIX,emby.wtf
 
 # Pronemby
-DOMAIN-SUFFIX,pornemby.com
+# DOMAIN-SUFFIX,pornemby.com
 
 # 纸片人
 DOMAIN-SUFFIX,embyplus.org
@@ -23,10 +24,9 @@ DOMAIN-SUFFIX,embyplus.org
 DOMAIN-SUFFIX,imetyou.top
 
 # 叔服
-DOMAIN-SUFFIX,mcjoker.xyz
+# DOMAIN-SUFFIX,mcjoker.xyz
 
 # 卷毛鼠
-DOMAIN-SUFFIX,jmsooo.com
 DOMAIN-SUFFIX,cf.jmsooo.com
 DOMAIN-SUFFIX,hk.jmsooo.com
 DOMAIN-SUFFIX,sg.jmsooo.com
@@ -41,19 +41,24 @@ DOMAIN-SUFFIX,cf1.jmsuper.com
 DOMAIN-SUFFIX,cf2.jmsuper.com
 DOMAIN-SUFFIX,mini.jmsuper.com
 DOMAIN-SUFFIX,nano.jmsuper.com
+DOMAIN-SUFFIX,jmsuper.com
+DOMAIN-SUFFIX,jmsooo.com
 
 # 探花TV
-DOMAIN-SUFFIX,tanhuatv.site
-IP-CIDR,152.53.67.239/32,no-resolve
+# DOMAIN-SUFFIX,tanhuatv.site
+# IP-CIDR,152.53.67.239/32,no-resolve
 
 # HKA
 DOMAIN-SUFFIX,hka-emby.aliz.work
+DOMAIN-SUFFIX,aliz.work
 
 # 未响音乐
 DOMAIN-SUFFIX,music.mefun.org
+DOMAIN-SUFFIX,mefun.org
 
 # 星云Nebula
 DOMAIN-SUFFIX,emby.nebula-media.org
+DOMAIN-SUFFIX,nebula-media.org
 
 # 二次元Emby
 DOMAIN-SUFFIX,media.nijigem.by
@@ -64,14 +69,29 @@ DOMAIN-SUFFIX,us-w.cdn.bgp.yt
 DOMAIN-SUFFIX,cu.cdn.bgp.yt
 
 # Nanflix(天南)
-DOMAIN-SUFFIX,us.nanflix.net
+# DOMAIN-SUFFIX,us.nanflix.net
 
 # Nya Media
 DOMAIN-SUFFIX,emby.bangumi.ca
+DOMAIN-SUFFIX,  bangumi.ca
 
 # 音海拾贝
 DOMAIN-SUFFIX,aiinyue.com
 DOMAIN-SUFFIX,yinhai.aiinyue.com
 
-# 存档服webdav
-DOMAIN-SUFFIX,pan.8897122.xyz
+# theluyuan
+DOMAIN-SUFFIX,dongman.theluyuan.com
+DOMAIN-SUFFIX,theluyuan.com
+
+# HG Emby
+DOMAIN-SUFFIX,hgemby.qzz.io
+DOMAIN-SUFFIX,qzz.io
+
+# OkEmby
+DOMAIN-SUFFIX,link00.okemby.org
+DOMAIN-SUFFIX,link01.okemby.org
+DOMAIN-SUFFIX,okemby.org
+
+# 这只猫Emby
+DOMAIN-SUFFIX,eb.zzm.li
+DOMAIN-SUFFIX,zzm.li
