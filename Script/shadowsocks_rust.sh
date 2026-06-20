@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/11/14
+# last updated:2026/06/20
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -287,6 +287,20 @@ EOF
   systemctl start ss-rust.service || { echo "无法启动 Shadowsocks-Rust 服务"; exit 1; }
   systemctl enable ss-rust.service || { echo "无法设置开机自启"; exit 1; }
 
+  # 如果已安装并启用了 UFW，则自动放行 Shadowsocks-Rust 端口
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "^Status: active"; then
+      if ! ufw status | grep -Eq "^${ss_port}(/tcp|/udp)?[[:space:]]"; then
+        ufw allow "${ss_port}" comment "ss-rust" >/dev/null
+        echo "UFW 已放行端口：${ss_port}（备注：ss-rust）"
+      else
+        echo "UFW 已存在端口：${ss_port}"
+      fi
+    else
+      echo "检测到 UFW 未启用，跳过开放端口"
+    fi
+  fi
+
   echo "Shadowsocks-Rust 安装成功，版本: ${latest_version}"
   echo "客户端连接信息: "
   echo "端口: ${ss_port}"
@@ -305,6 +319,24 @@ uninstall_ss() {
   rm -f /lib/systemd/system/ss-rust.service
   rm -rf /etc/ss-rust
   rm -f /usr/local/bin/ssserver
+
+  # 删除 UFW 中备注为 ss-rust 的规则
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "^Status: active"; then
+      if ufw status | grep -qw "ss-rust"; then
+        ufw status numbered | grep -w "ss-rust" | tac | while read -r line; do
+          num=$(echo "$line" | grep -oP '^\[\K[0-9]+')
+          [ -n "$num" ] && ufw --force delete "$num" >/dev/null
+        done
+        echo "UFW 已删除备注为 ss-rust 的规则"
+      else
+        echo "UFW 未找到备注为 ss-rust 的规则"
+      fi
+    else
+      echo "检测到 UFW 未启用，跳过删除端口规则"
+    fi
+  fi
+
   echo "Shadowsocks-Rust 已卸载"
 }
 
