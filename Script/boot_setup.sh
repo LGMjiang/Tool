@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2025/03/11
+# last updated:2026/06/20
 
 # 更新软件和源
 echo "更新软件源和软件..."
@@ -183,7 +183,7 @@ if [[ $ufw_status == *"Status: inactive"* ]]; then
     # 允许 HTTP 和 HTTPS 端口
     ufw allow 80
     ufw allow 443
-    ufw allow 5210 comment "iperf3"
+    ufw allow 5201 comment "iperf3"
   elif [ "$is_nat_machine" == true ]; then
     while true; do
       read -p "请输入 iperf3 监听端口 (建议1024-65535之间): " IPERF3_PORT
