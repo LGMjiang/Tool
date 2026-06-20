@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2024/12/07
+# last updated:2026/06/20
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -214,6 +214,24 @@ uninstall_shadow_tls() {
     systemctl disable shadow-tls-snell.service || { echo "无法取消 shadow-tls-snell 服务开机自启"; exit 1; }
     rm -f /lib/systemd/system/shadow-tls-snell.service
     rm -f /usr/local/bin/shadow-tls
+
+    # 删除 UFW 中备注为 stls 的规则
+    if command -v ufw >/dev/null 2>&1; then
+      if ufw status | grep -q "^Status: active"; then
+        if ufw status | grep -qw "stls"; then
+          ufw status numbered | grep -w "stls" | tac | while read -r line; do
+            num=$(echo "$line" | grep -oP '^\[\K[0-9]+')
+            [ -n "$num" ] && ufw --force delete "$num" >/dev/null
+          done
+          echo "UFW 已删除备注为 stls 的规则"
+        else
+          echo "UFW 未找到备注为 stls 的规则"
+        fi
+      else
+        echo "检测到 UFW 未启用，跳过删除端口规则"
+      fi
+    fi
+
     echo "shadow-TLS snell 已卸载"
   fi
 }
@@ -356,6 +374,20 @@ EOF
   systemctl daemon-reload || { echo "无法重载 daemon"; exit 1; }
   systemctl start shadow-tls-${protocol_type}.service || { echo "无法启动 Shadow-TLS $protocol_type 服务"; exit 1; }
   systemctl enable shadow-tls-${protocol_type}.service || { echo "无法设置开机自启"; exit 1; }
+
+  # 如果已安装并启用了 UFW，则自动放行 Shadow-TLS 端口
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "^Status: active"; then
+      if ! ufw status | grep -Eq "^${shadow_tls_port}(/tcp|/udp)?[[:space:]]"; then
+        ufw allow "${shadow_tls_port}" comment "stls" >/dev/null
+        echo "UFW 已放行端口：${shadow_tls_port}（备注：stls）"
+      else
+        echo "UFW 已存在端口：${shadow_tls_port}"
+      fi
+    else
+      echo "检测到 UFW 未启用，跳过开放端口"
+    fi
+  fi
 
   echo "Shadow-TLS 安装成功，版本: ${latest_version}"
   echo "客户端连接信息: "
