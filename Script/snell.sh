@@ -1,5 +1,5 @@
 #!/bin/bash
-# last updated:2025/07/16
+# last updated:2026/06/20
 
 # 检查是否为 root 用户
 if [[ $EUID -ne 0 ]]; then
@@ -72,6 +72,24 @@ uninstall_snell() {
   rm -rf /etc/snell
   rm -f /usr/local/bin/snell-server
   echo "Snell 已卸载"
+
+  # 删除 UFW 中备注为 snell 的规则
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "^Status: active"; then
+      if ufw status | grep -qw "snell"; then
+        ufw status numbered | grep -w "snell" | tac | while read -r line; do
+          num=$(echo "$line" | grep -oP '^\[\K[0-9]+')
+          [ -n "$num" ] && ufw --force delete "$num" >/dev/null
+        done
+        echo "UFW 已删除备注为 snell 的规则"
+      else
+        echo "UFW 未找到备注为 snell 的规则"
+      fi
+    else
+      echo "检测到 UFW 未启用，跳过删除端口规则"
+    fi
+  fi
+
 }
 
 # 更新 Snell 函数
@@ -189,6 +207,20 @@ EOF
   systemctl daemon-reload || { echo "无法重载 daemon"; exit 1; }
   systemctl start snell.service || { echo "无法启动 Snell 服务"; exit 1; }
   systemctl enable snell.service || { echo "无法设置开机自启"; exit 1; }
+
+  # 如果已安装并启用了 UFW，则自动放行 Snell 端口
+  if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "^Status: active"; then
+      if ! ufw status | grep -Eq "^${snell_port}(/tcp|/udp)?[[:space:]]"; then
+        ufw allow "${snell_port}" comment "snell" >/dev/null
+        echo "UFW 已放行端口：${snell_port}（备注：snell）"
+      else
+        echo "UFW 已存在端口：${snell_port}"
+      fi
+    else
+      echo "检测到 UFW 未启用，跳过开放端口"
+    fi
+  fi
 
   echo "Snell 安装成功，版本: ${latest_version}"
   echo "客户端连接信息: "
