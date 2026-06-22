@@ -128,71 +128,100 @@ ufw_delete_by_comment() {
     fi
 
     if ! ufw status | grep -q "^Status: active"; then
-        log_info "UFW 未启用，跳过删除端口规则"
+        log_info "✓ UFW 未启用，无需清理规则"
         return 0
     fi
 
     if ! ufw status | grep -qw "${comment}"; then
-        log_info "UFW 未找到备注为 ${comment} 的规则"
+        log_info "✓ 未找到相关防火墙规则"
         return 0
     fi
 
     # 从后往前删除，避免序号变化
     local rules
     rules=$(ufw status numbered | grep -w "${comment}" | tac)
+    local count=0
 
     while IFS= read -r line; do
         local num
         num=$(echo "$line" | grep -oP '^\[\K[0-9]+')
         if [[ -n "$num" ]]; then
             ufw --force delete "$num" &> /dev/null
+            ((count++))
         fi
     done <<< "$rules"
 
-    log_info "UFW 已删除备注为 ${comment} 的规则"
+    if [[ $count -gt 0 ]]; then
+        log_info "✓ 已删除 ${count} 条防火墙规则 (备注: ${comment})"
+    else
+        log_info "✓ 未找到需要删除的规则"
+    fi
 }
 
 # 生成客户端配置
 generate_client_config() {
+    echo
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "生成客户端配置"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    log_info "正在获取服务器公网 IP..."
     local server_ip
     server_ip=$(curl -m 5 -s https://api.ipify.org || echo "")
 
     if [[ -z "$server_ip" ]]; then
-        log_warn "无法获取公网 IP，请手动替换配置中的服务器地址"
+        log_warn "无法自动获取公网 IP 地址"
+        echo "提示: 配置中将使用占位符，请手动替换为您的服务器 IP"
         server_ip="YOUR_SERVER_IP"
+    else
+        log_info "检测到公网 IP: ${server_ip}"
     fi
 
     # 选择是否开启 udp
+    echo
+    echo "【UDP 配置】"
     local surge_udp_relay_param=", udp-relay=true"
     local mihomo_udp_param="true"
 
-    read -r -p "是否开启 UDP? (Y/n): " udp_choice
+    read -r -p "是否在客户端配置中启用 UDP? (Y/n): " udp_choice
     if [[ ${udp_choice,,} == "n" ]]; then
         surge_udp_relay_param=""
         mihomo_udp_param="false"
+        log_info "客户端将不使用 UDP"
     elif [[ ! ${ss_mode} =~ udp ]]; then
-        log_warn "当前配置未开启 UDP (mode: ${ss_mode})"
-        log_warn "Surge udp-relay 和 Mihomo Party udp 参数将被禁用"
+        log_warn "服务端未开启 UDP (mode: ${ss_mode})"
+        log_warn "客户端 UDP 参数将被禁用"
         surge_udp_relay_param=""
         mihomo_udp_param="false"
+    else
+        log_info "客户端将启用 UDP"
     fi
 
     # 选择客户端
     echo
-    echo "选择要生成的客户端配置 (默认都生成): "
-    echo "1. Surge"
-    echo "2. Mihomo Party"
-    read -r -p "请选择 [1-2]: " client_choice
+    echo "【选择客户端】"
+    echo "1. Surge (iOS/macOS)"
+    echo "2. Mihomo Party (跨平台)"
+    echo "3. 全部生成"
+    read -r -p "请选择 [1-3] (默认 3): " client_choice
 
-    case $client_choice in
+    case ${client_choice:-3} in
         1)
             echo
-            log_info "Surge 客户端配置:"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Surge 客户端配置"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "复制以下配置到 Surge 的 [Proxy] 区块:"
+            echo
             echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}"
             ;;
         2)
             echo
-            log_info "Mihomo Party 客户端配置:"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Mihomo Party 客户端配置"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "复制以下配置到 Mihomo Party 的 proxies 区块:"
+            echo
             cat << EOF
 - name: "shadowsocks-rust"
   type: ss
@@ -205,12 +234,19 @@ EOF
             ;;
         *)
             echo
-            log_info "输出所有客户端配置"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Surge 客户端配置"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "复制以下配置到 Surge 的 [Proxy] 区块:"
             echo
-            echo "=== Surge 配置 ==="
             echo "name = ss, ${server_ip}, ${ss_port}, encrypt-method=${encryption_method}, password=${ss_password}${surge_udp_relay_param}"
             echo
-            echo "=== Mihomo Party 配置 ==="
+            echo
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Mihomo Party 客户端配置"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "复制以下配置到 Mihomo Party 的 proxies 区块:"
+            echo
             cat << EOF
 - name: "shadowsocks-rust"
   type: ss
@@ -222,100 +258,191 @@ EOF
 EOF
             ;;
     esac
+
+    echo
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo
+    echo "提示:"
+    echo "  • 请将 'name' 替换为您想要的节点名称"
+    if [[ "$server_ip" == "YOUR_SERVER_IP" ]]; then
+        echo "  • 请将 YOUR_SERVER_IP 替换为您的服务器实际 IP"
+    fi
 }
 
 # 更新 Shadowsocks-Rust
 update_ss() {
     if [[ -z "$current_version" ]]; then
-        log_error "未检测到 Shadowsocks-Rust，请先安装"
+        log_error "未检测到 Shadowsocks-Rust 服务"
+        echo "请先运行安装功能，或使用以下命令检查:"
+        echo "  ssserver -V"
         return 1
     fi
 
     if [[ "$current_version" == "$latest_version" ]]; then
-        log_info "当前已是最新版本 (${current_version})，无需更新"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "当前已是最新版本 (${current_version})"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "无需更新，配置信息:"
+        if [[ -f /etc/ss-rust/config.json ]]; then
+            echo "  配置文件: /etc/ss-rust/config.json"
+            echo "  服务状态: $(systemctl is-active ss-rust.service)"
+        fi
         return 0
     fi
 
+    echo
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "发现新版本可用"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  当前版本: ${current_version}"
+    echo "  最新版本: ${latest_version}"
+    echo
+    read -r -p "是否立即更新? (Y/n): " update_confirm
+    if [[ ${update_confirm,,} == "n" ]]; then
+        log_info "已取消更新操作"
+        return 0
+    fi
+
+    echo
     log_info "开始更新 Shadowsocks-Rust: ${current_version} -> ${latest_version}"
 
     # 停止服务
+    log_info "[1/5] 停止 Shadowsocks-Rust 服务..."
     if systemctl is-active --quiet ss-rust.service; then
-        systemctl stop ss-rust.service || {
-            log_error "无法停止 Shadowsocks-Rust 服务"
+        if systemctl stop ss-rust.service; then
+            log_info "✓ 服务已停止"
+        else
+            log_error "✗ 无法停止服务"
+            echo "提示: 可以尝试手动停止: systemctl stop ss-rust.service"
             return 1
-        }
+        fi
+    else
+        log_info "✓ 服务未运行"
     fi
 
     # 下载新版本
     local download_url="https://github.com/shadowsocks/shadowsocks-rust/releases/download/${latest_version}/shadowsocks-${latest_version}.${ss_type}.tar.xz"
     local temp_file="/tmp/shadowsocks-${latest_version}.${ss_type}.tar.xz"
 
-    log_info "下载中: ${download_url}"
-    if ! wget -O "$temp_file" "$download_url"; then
-        log_error "下载失败"
+    log_info "[2/5] 下载新版本..."
+    echo "  下载地址: ${download_url}"
+    if wget -q --show-progress -O "$temp_file" "$download_url" 2>&1; then
+        log_info "✓ 下载完成"
+    else
+        log_error "✗ 下载失败"
+        echo "可能原因:"
+        echo "  • 网络连接问题"
+        echo "  • GitHub 访问受限"
+        echo "  • 下载地址失效"
         systemctl start ss-rust.service 2>/dev/null
         return 1
     fi
 
     # 解压
-    if ! tar -xf "$temp_file" -C /tmp/; then
-        log_error "解压失败"
+    log_info "[3/5] 解压安装包..."
+    if tar -xf "$temp_file" -C /tmp/ 2>/dev/null; then
+        log_info "✓ 解压成功"
+    else
+        log_error "✗ 解压失败"
         rm -f "$temp_file"
         systemctl start ss-rust.service 2>/dev/null
         return 1
     fi
 
     # 备份旧版本
+    log_info "[4/5] 更新程序文件..."
     if [[ -f /usr/local/bin/ssserver ]]; then
         cp /usr/local/bin/ssserver /usr/local/bin/ssserver.backup
+        log_info "✓ 已备份旧版本"
     fi
 
     # 安装新版本
-    mv -f /tmp/ssserver /usr/local/bin/ || {
-        log_error "移动文件失败"
-        [[ -f /usr/local/bin/ssserver.backup ]] && mv /usr/local/bin/ssserver.backup /usr/local/bin/ssserver
+    if mv -f /tmp/ssserver /usr/local/bin/; then
+        chmod +x /usr/local/bin/ssserver
+        log_info "✓ 新版本已安装"
+    else
+        log_error "✗ 文件安装失败"
+        if [[ -f /usr/local/bin/ssserver.backup ]]; then
+            mv /usr/local/bin/ssserver.backup /usr/local/bin/ssserver
+            log_info "已回滚到旧版本"
+        fi
         rm -f "$temp_file"
         systemctl start ss-rust.service 2>/dev/null
         return 1
-    }
-
-    chmod +x /usr/local/bin/ssserver
+    fi
 
     # 清理
     rm -f /tmp/sslocal /tmp/ssmanager /tmp/ssservice /tmp/ssurl "$temp_file"
     rm -f /usr/local/bin/ssserver.backup
 
     # 重启服务
-    if ! systemctl start ss-rust.service; then
-        log_error "无法重启 Shadowsocks-Rust 服务"
+    log_info "[5/5] 重启 Shadowsocks-Rust 服务..."
+    if systemctl start ss-rust.service; then
+        log_info "✓ 服务启动成功"
+        sleep 2
+        if systemctl is-active --quiet ss-rust.service; then
+            echo
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Shadowsocks-Rust 更新完成"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "  新版本: ${latest_version}"
+            echo "  服务状态: 运行中"
+            echo
+            echo "提示: 原有配置已保留，无需重新配置客户端"
+        else
+            log_warn "服务启动后异常退出"
+            echo "请检查日志: journalctl -u ss-rust -n 30"
+        fi
+    else
+        log_error "✗ 服务启动失败"
+        echo "请检查日志排查问题: journalctl -u ss-rust -n 50"
         return 1
     fi
-
-    log_info "Shadowsocks-Rust 已更新到版本 ${latest_version}"
 }
 
 # 安装 Shadowsocks-Rust
 install_ss() {
+    echo
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "开始安装 Shadowsocks-Rust ${latest_version}"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
     if [[ -f /usr/local/bin/ssserver ]]; then
-        log_warn "检测到已安装 Shadowsocks-Rust"
-        read -r -p "是否覆盖安装? (y/N): " overwrite
+        echo
+        log_warn "检测到系统中已安装 Shadowsocks-Rust"
+        if [[ -n "$current_version" ]]; then
+            echo "  当前版本: ${current_version}"
+        fi
+        echo "  程序位置: /usr/local/bin/ssserver"
+        echo
+        log_warn "覆盖安装将替换现有程序，但保留配置文件"
+        read -r -p "是否继续覆盖安装? (y/N): " overwrite
         if [[ ${overwrite,,} != "y" ]]; then
-            log_info "已取消安装"
+            log_info "已取消安装操作"
             return 0
         fi
     fi
 
+    echo
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "配置向导"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
     # 获取用户输入的配置信息
-    read -r -p "请输入 Shadowsocks-Rust 监听端口 (默认随机): " ss_port
+    echo
+    echo "【端口配置】"
+    read -r -p "请输入 Shadowsocks-Rust 监听端口 (留空随机生成 10000-30000): " ss_port
     ss_port=${ss_port:-$(shuf -i 10000-30000 -n 1)}
+    log_info "使用端口: ${ss_port}"
 
     # 选择加密方法
-    echo "选择加密方法:"
-    echo "1. 2022-blake3-aes-256-gcm (推荐)"
-    echo "2. 2022-blake3-aes-128-gcm"
-    echo "3. aes-256-gcm"
-    echo "4. chacha20-ietf-poly1305"
-    echo "5. aes-128-gcm"
+    echo
+    echo "【加密方法】"
+    echo "1. 2022-blake3-aes-256-gcm (推荐，最安全)"
+    echo "2. 2022-blake3-aes-128-gcm (平衡性能与安全)"
+    echo "3. aes-256-gcm (传统加密)"
+    echo "4. chacha20-ietf-poly1305 (ARM 设备友好)"
+    echo "5. aes-128-gcm (高性能)"
     read -r -p "请选择 [1-5] (默认 1): " method_choice
 
     case ${method_choice:-1} in
@@ -326,8 +453,11 @@ install_ss() {
         5) encryption_method="aes-128-gcm" ;;
         *) encryption_method="2022-blake3-aes-256-gcm" ;;
     esac
+    log_info "加密方法: ${encryption_method}"
 
     # 生成或输入密码
+    echo
+    echo "【密码配置】"
     read -r -p "请输入 Shadowsocks 密码 (留空自动生成): " ss_password
     if [[ -z "$ss_password" ]]; then
         if [[ "$encryption_method" == "2022-blake3-aes-256-gcm" ]]; then
@@ -337,13 +467,17 @@ install_ss() {
         else
             ss_password=$(openssl rand -base64 24)
         fi
+        log_info "已生成随机密码"
+    else
+        log_info "使用自定义密码"
     fi
 
     # 选择传输模式
-    echo "选择传输模式: "
-    echo "1. tcp_and_udp (推荐)"
-    echo "2. tcp_only"
-    echo "3. udp_only"
+    echo
+    echo "【传输模式】"
+    echo "1. tcp_and_udp (推荐，支持 UDP 游戏和语音)"
+    echo "2. tcp_only (仅 TCP)"
+    echo "3. udp_only (仅 UDP)"
     read -r -p "请选择 [1-3] (默认 1): " mode_choice
 
     case ${mode_choice:-1} in
@@ -352,60 +486,86 @@ install_ss() {
         3) ss_mode="udp_only" ;;
         *) ss_mode="tcp_and_udp" ;;
     esac
+    log_info "传输模式: ${ss_mode}"
 
     # TCP Fast Open
+    echo
+    echo "【TCP Fast Open】"
+    echo "TFO 可以减少连接延迟，但需要内核支持"
     read -r -p "是否开启 TCP Fast Open? (y/N): " enable_tfo
     if [[ ${enable_tfo,,} == "y" ]]; then
         ss_tfo=true
+        log_info "已启用 TCP Fast Open"
     else
         ss_tfo=false
+        log_info "未启用 TCP Fast Open"
     fi
 
     # 确认配置
+    echo
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "配置信息确认"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     cat << EOF
-
-请确认以下配置信息：
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-端口:       ${ss_port}
-密码:       ${ss_password}
-加密方法:   ${encryption_method}
-传输模式:   ${ss_mode}
-TCP Fast Open: ${ss_tfo}
+  监听端口:      ${ss_port}
+  密码:          ${ss_password}
+  加密方法:      ${encryption_method}
+  传输模式:      ${ss_mode}
+  TCP Fast Open: ${ss_tfo}
+  版本:          ${latest_version}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
 
-    read -r -p "是否确认无误? (y/N): " confirm
-    if [[ ${confirm,,} != "y" ]]; then
-        log_info "已取消安装"
+    echo
+    read -r -p "确认配置无误，开始安装? (Y/n): " confirm
+    if [[ ${confirm,,} == "n" ]]; then
+        log_info "已取消安装操作"
         return 0
     fi
 
     # 下载并安装
+    echo
+    log_info "开始安装..."
     local download_url="https://github.com/shadowsocks/shadowsocks-rust/releases/download/${latest_version}/shadowsocks-${latest_version}.${ss_type}.tar.xz"
     local temp_file="/tmp/shadowsocks-${latest_version}.${ss_type}.tar.xz"
 
-    log_info "下载中: ${download_url}"
-    if ! wget -O "$temp_file" "$download_url"; then
-        log_error "下载失败"
+    log_info "[1/6] 下载 Shadowsocks-Rust 安装包..."
+    echo "  下载地址: ${download_url}"
+    if wget -q --show-progress -O "$temp_file" "$download_url" 2>&1; then
+        log_info "✓ 下载完成"
+    else
+        log_error "✗ 下载失败"
+        echo "可能原因:"
+        echo "  • 网络连接问题"
+        echo "  • GitHub 访问受限"
+        echo "  • 下载地址失效"
+        echo "建议: 检查网络连接或使用代理"
         return 1
     fi
 
-    if ! tar -xf "$temp_file" -C /tmp/; then
-        log_error "解压失败"
+    log_info "[2/6] 解压安装包..."
+    if tar -xf "$temp_file" -C /tmp/ 2>/dev/null; then
+        log_info "✓ 解压成功"
+    else
+        log_error "✗ 解压失败"
         rm -f "$temp_file"
         return 1
     fi
 
-    mv -f /tmp/ssserver /usr/local/bin/ || {
-        log_error "移动文件失败"
+    log_info "[3/6] 安装程序文件..."
+    if mv -f /tmp/ssserver /usr/local/bin/; then
+        chmod +x /usr/local/bin/ssserver
+        log_info "✓ 程序已安装到 /usr/local/bin/ssserver"
+    else
+        log_error "✗ 文件安装失败"
         rm -f "$temp_file"
         return 1
-    }
+    fi
 
-    chmod +x /usr/local/bin/ssserver
     rm -f /tmp/sslocal /tmp/ssmanager /tmp/ssservice /tmp/ssurl "$temp_file"
 
     # 创建配置目录
+    log_info "[4/6] 生成配置文件..."
     mkdir -p /etc/ss-rust
 
     # 创建配置文件
@@ -421,8 +581,10 @@ EOF
     "fast_open": ${ss_tfo}
 }
 EOF
+    log_info "✓ 配置文件已生成 (/etc/ss-rust/config.json)"
 
     # 创建 systemd 服务
+    log_info "[5/6] 配置系统服务..."
     cat > /lib/systemd/system/ss-rust.service << EOF
 [Unit]
 Description=Shadowsocks Rust Service
@@ -445,34 +607,47 @@ SyslogIdentifier=ss-rust
 WantedBy=multi-user.target
 EOF
 
-    # 启动服务
-    systemctl daemon-reload || {
-        log_error "无法重载 systemd"
-        return 1
-    }
-
-    if ! systemctl start ss-rust.service; then
-        log_error "无法启动 Shadowsocks-Rust 服务"
-        log_error "请检查日志: journalctl -u ss-rust -n 50"
+    if systemctl daemon-reload; then
+        log_info "✓ 服务配置已加载"
+    else
+        log_error "✗ 重载 systemd 失败"
         return 1
     fi
 
-    if ! systemctl enable ss-rust.service; then
-        log_warn "无法设置开机自启"
+    if systemctl start ss-rust.service; then
+        log_info "✓ Shadowsocks-Rust 服务已启动"
+    else
+        log_error "✗ 服务启动失败"
+        echo "请检查日志排查问题: journalctl -u ss-rust -n 50"
+        return 1
+    fi
+
+    if systemctl enable ss-rust.service >/dev/null 2>&1; then
+        log_info "✓ 已设置开机自启"
+    else
+        log_warn "✗ 设置开机自启失败 (不影响当前使用)"
     fi
 
     # 配置防火墙
+    log_info "[6/6] 配置防火墙..."
     ufw_allow_port "${ss_port}" "ss-rust"
 
-    log_info "Shadowsocks-Rust 安装成功 (版本: ${latest_version})"
+    sleep 1
     echo
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Shadowsocks-Rust 安装完成！"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "安装信息:"
+    echo "  版本:          ${latest_version}"
+    echo "  配置文件:      /etc/ss-rust/config.json"
+    echo "  服务状态:      $(systemctl is-active ss-rust.service)"
+    echo
     echo "客户端连接信息:"
-    echo "端口:       ${ss_port}"
-    echo "密码:       ${ss_password}"
-    echo "加密方法:   ${encryption_method}"
-    echo "传输模式:   ${ss_mode}"
-    echo "TCP Fast Open: ${ss_tfo}"
+    echo "  监听端口:      ${ss_port}"
+    echo "  密码:          ${ss_password}"
+    echo "  加密方法:      ${encryption_method}"
+    echo "  传输模式:      ${ss_mode}"
+    echo "  TCP Fast Open: ${ss_tfo}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo
 
@@ -481,52 +656,114 @@ EOF
 
 # 卸载 Shadowsocks-Rust
 uninstall_ss() {
-    log_warn "即将卸载 Shadowsocks-Rust，所有配置和数据将被删除"
+    echo
+    log_warn "═══════════════════════════════════════"
+    log_warn "  即将卸载 Shadowsocks-Rust 服务"
+    log_warn "═══════════════════════════════════════"
+    echo
+    echo "以下内容将被删除:"
+    echo "  • Shadowsocks-Rust 服务 (ss-rust.service)"
+    echo "  • 配置文件 (/etc/ss-rust/)"
+    echo "  • 程序文件 (/usr/local/bin/ssserver)"
+    echo "  • 防火墙规则 (UFW)"
+    echo
+    log_warn "警告: 此操作不可恢复，请确保已备份重要配置！"
+    echo
     read -r -p "确认卸载? (y/N): " confirm
     if [[ ${confirm,,} != "y" ]]; then
-        log_info "已取消卸载"
+        log_info "已取消卸载操作"
         return 0
     fi
 
+    echo
+    log_info "开始卸载 Shadowsocks-Rust..."
     local uninstall_failed=false
 
     # 停止并禁用服务
+    log_info "[1/6] 停止 Shadowsocks-Rust 服务..."
     if systemctl is-active --quiet ss-rust.service; then
-        systemctl stop ss-rust.service || {
-            log_warn "停止服务失败"
+        if systemctl stop ss-rust.service; then
+            log_info "✓ 服务已停止"
+        else
+            log_warn "✗ 停止服务失败 (可能影响后续操作)"
             uninstall_failed=true
-        }
+        fi
+    else
+        log_info "✓ 服务未运行，跳过"
     fi
 
+    log_info "[2/6] 禁用开机自启..."
     if systemctl is-enabled --quiet ss-rust.service 2>/dev/null; then
-        systemctl disable ss-rust.service || log_warn "禁用服务失败"
+        if systemctl disable ss-rust.service 2>/dev/null; then
+            log_info "✓ 已禁用开机自启"
+        else
+            log_warn "✗ 禁用失败"
+        fi
+    else
+        log_info "✓ 服务未启用，跳过"
     fi
 
     # 删除服务文件
-    [[ -f /lib/systemd/system/ss-rust.service ]] && rm -f /lib/systemd/system/ss-rust.service
-    [[ -f /etc/systemd/system/ss-rust.service ]] && rm -f /etc/systemd/system/ss-rust.service
-    systemctl daemon-reload 2>/dev/null
+    log_info "[3/6] 删除服务文件..."
+    local service_removed=false
+    if [[ -f /lib/systemd/system/ss-rust.service ]]; then
+        rm -f /lib/systemd/system/ss-rust.service
+        service_removed=true
+    fi
+    if [[ -f /etc/systemd/system/ss-rust.service ]]; then
+        rm -f /etc/systemd/system/ss-rust.service
+        service_removed=true
+    fi
+    if [[ "$service_removed" == "true" ]]; then
+        systemctl daemon-reload 2>/dev/null
+        log_info "✓ 服务文件已删除"
+    else
+        log_info "✓ 未找到服务文件，跳过"
+    fi
 
     # 删除配置文件
-    [[ -d /etc/ss-rust ]] && rm -rf /etc/ss-rust
+    log_info "[4/6] 删除配置文件..."
+    if [[ -d /etc/ss-rust ]]; then
+        rm -rf /etc/ss-rust
+        log_info "✓ 配置目录已删除 (/etc/ss-rust/)"
+    else
+        log_info "✓ 配置目录不存在，跳过"
+    fi
 
     # 删除二进制文件
-    [[ -f /usr/local/bin/ssserver ]] && rm -f /usr/local/bin/ssserver
+    log_info "[5/6] 删除程序文件..."
+    if [[ -f /usr/local/bin/ssserver ]]; then
+        rm -f /usr/local/bin/ssserver
+        log_info "✓ 程序文件已删除 (/usr/local/bin/ssserver)"
+    else
+        log_info "✓ 程序文件不存在，跳过"
+    fi
 
     # 删除备份文件
     [[ -f /usr/local/bin/ssserver.backup ]] && rm -f /usr/local/bin/ssserver.backup
 
     # 删除防火墙规则
+    log_info "[6/6] 清理防火墙规则..."
     ufw_delete_by_comment "ss-rust"
 
     # 清理临时文件
-    rm -f /tmp/shadowsocks-*.tar.xz /tmp/ssserver /tmp/sslocal /tmp/ssmanager /tmp/ssservice /tmp/ssurl
+    rm -f /tmp/shadowsocks-*.tar.xz /tmp/ssserver /tmp/sslocal /tmp/ssmanager /tmp/ssservice /tmp/ssurl 2>/dev/null
 
+    echo
     if [[ "$uninstall_failed" == "true" ]]; then
-        log_warn "Shadowsocks-Rust 卸载完成，但部分操作失败"
+        log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_warn "卸载完成，但部分操作失败"
+        log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "建议手动检查以下内容:"
+        echo "  • 服务状态: systemctl status ss-rust"
+        echo "  • 残留文件: ls -la /usr/local/bin/ssserver"
+        echo "  • 防火墙规则: ufw status"
         return 1
     else
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         log_info "Shadowsocks-Rust 已完全卸载"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "系统已恢复到安装前的状态"
     fi
 }
 
