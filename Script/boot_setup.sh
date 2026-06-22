@@ -1,20 +1,29 @@
 #!/bin/bash
-# last updated:2026/06/20
+# last updated:2026/06/22
+
+# 检查 root 权限
+if [ "$EUID" -ne 0 ]; then
+  echo "错误：请以 root 权限运行此脚本。"
+  exit 1
+fi
 
 # 更新软件和源
 echo "更新软件源和软件..."
-apt update -y && apt upgrade -y
+if ! apt update -y || ! apt upgrade -y; then
+  echo "错误：系统更新失败，请检查网络连接或软件源配置。"
+  exit 1
+fi
 
 # 检查并自动安装必要工具
-for cmd in wget tar curl xz unzip jq ufw iperf3; do
+for cmd in wget tar curl xz unzip jq ufw iperf3 vnstat; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd 未安装，正在安装..."
-    
+
     # 对于 xz，确保安装 xz-utils
     if [ "$cmd" == "xz" ]; then
       cmd="xz-utils"
     fi
-    
+
     if ! apt install -y $cmd; then
       echo "$cmd 安装失败，请检查系统或网络连接。"
       exit 1
@@ -22,12 +31,23 @@ for cmd in wget tar curl xz unzip jq ufw iperf3; do
   fi
 done
 
+# 启动并启用 vnstat 服务
+if command -v vnstat &> /dev/null; then
+  echo "配置 vnstat 服务..."
+  if systemctl enable vnstat && systemctl start vnstat; then
+    echo "vnstat 服务已启动并设置为开机自启。"
+  else
+    echo "警告：vnstat 服务启动失败，请手动检查。"
+  fi
+fi
+
 # 是否为NAT机器的选择
 read -r -p "是否是NAT机器? (y/N): " is_nat_machine
-if [[ ${is_nat_machine,,} == "y" ]]; then
-  echo "非NAT机器，跳过UFW相关配置。"
+if [[ "${is_nat_machine,,}" == "y" ]]; then
+  echo "这是 NAT 机器，将使用适配配置。"
   is_nat_machine=true
 else
+  echo "这是非 NAT 机器，将使用标准配置。"
   is_nat_machine=false
 fi
 
@@ -38,23 +58,36 @@ SSH_CONF_FILE="${SSH_CONF_DIR}/sshd.conf"
 # 定义 authorized_keys 文件路径
 AUTHORIZED_KEYS_FILE="$HOME/.ssh/authorized_keys"
 
+# 端口验证函数
+validate_port() {
+  local port=$1
+  local min_port=$2
+  local max_port=65535
+
+  if [[ $port =~ ^[0-9]+$ ]] && [ "$port" -ge "$min_port" ] && [ "$port" -le "$max_port" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # 循环直到用户输入有效的 SSH 端口号
 while true; do
-  read -p "请输入新的 SSH 端口号 (建议1024-65535之间): " SSH_PORT
+  read -r -p "请输入新的 SSH 端口号 (建议1024-65535之间): " SSH_PORT
 
-  if [[ ${is_nat_machine,,} == true ]]; then
-    # 检查输入的端口号是否有效
-    if [[ $SSH_PORT =~ ^[0-9]+$ ]] && [ "$SSH_PORT" -ge 1 ] && [ "$SSH_PORT" -le 65535 ]; then
+  if [ "$is_nat_machine" = true ]; then
+    # NAT 机器允许 1-65535
+    if validate_port "$SSH_PORT" 1; then
       echo "有效的端口号: $SSH_PORT"
-      break  # 跳出循环
+      break
     else
       echo "无效的端口号，请输入1-65535之间的数字。"
     fi
-  elif [[ ${is_nat_machine,,} == false ]]; then
-    # 检查输入的端口号是否有效
-    if [[ $SSH_PORT =~ ^[0-9]+$ ]] && [ "$SSH_PORT" -ge 1024 ] && [ "$SSH_PORT" -le 65535 ]; then
+  else
+    # 非 NAT 机器限制 1024-65535
+    if validate_port "$SSH_PORT" 1024; then
       echo "有效的端口号: $SSH_PORT"
-      break  # 跳出循环
+      break
     else
       echo "无效的端口号，请输入1024-65535之间的数字。"
     fi
@@ -73,8 +106,14 @@ else
     echo "检测到已有配置文件，正在打包备份..."
     
     # 打包备份文件
-    tar -czf "$BACKUP_FILE" "$SSH_CONF_DIR"/*.conf && echo "备份完成: $BACKUP_FILE"
-    mv $BACKUP_FILE $SSH_CONF_DIR
+    if tar -czf "$BACKUP_FILE" "$SSH_CONF_DIR"/*.conf; then
+      echo "备份完成: $BACKUP_FILE"
+      if ! mv "$BACKUP_FILE" "$SSH_CONF_DIR"; then
+        echo "警告：移动备份文件失败，备份文件位于当前目录。"
+      fi
+    else
+      echo "警告：备份失败，将继续执行。"
+    fi
     
     # 删除已有配置文件
     rm -f "$SSH_CONF_DIR"/*.conf
@@ -97,22 +136,21 @@ fi
 # 重启 SSH 服务
 echo "重启 SSH 服务..."
 systemctl daemon-reload
-if ! systemctl restart sshd &> /dev/null; then
-  ERROR_MSG=$(systemctl restart sshd 2>&1)
-  if [[ $ERROR_MSG == *"Unit sshd.service not found"* ]]; then
-    echo "未找到 sshd.service，尝试启用 ssh.service..."
-    if systemctl enable ssh.service && systemctl restart sshd; then
-      echo "SSH 服务已成功启动。"
-    else
-      echo "启动 ssh.service 失败，请检查系统配置。" >&2
-      exit 1
-    fi
-  else
-    echo "重启 sshd 失败，错误信息：$ERROR_MSG" >&2
-    exit 1
+
+# 检测正确的 SSH 服务名称
+SSH_SERVICE="sshd"
+if ! systemctl is-enabled sshd &>/dev/null && ! systemctl is-active sshd &>/dev/null; then
+  if systemctl is-enabled ssh &>/dev/null || systemctl is-active ssh &>/dev/null; then
+    SSH_SERVICE="ssh"
   fi
+fi
+
+if systemctl restart "$SSH_SERVICE"; then
+  echo "SSH 服务 ($SSH_SERVICE) 已成功重启。"
 else
-  echo "SSH 服务已成功重启。"
+  echo "错误：重启 $SSH_SERVICE 失败，请检查配置文件。" >&2
+  systemctl status "$SSH_SERVICE"
+  exit 1
 fi
 
 # 设置复杂的密码
@@ -145,21 +183,17 @@ fi
 # 文件准备完成，打开文件供用户编辑
 echo "请编辑 $AUTHORIZED_KEYS_FILE 文件（保存后继续执行脚本）"
 sleep 1
-# 检查 vim 是否存在，存在则用 vim，否则用 vi
-if command -v vim >/dev/null 2>&1; then
-  editor="vim"
-else
-  editor="vi"
-fi
-# 使用选择的编辑器打开文件
-$editor "$AUTHORIZED_KEYS_FILE"
+# 使用系统默认编辑器
+${VISUAL:-${EDITOR:-vi}} "$AUTHORIZED_KEYS_FILE"
 
 # 编辑完成，继续执行脚本后续操作
 echo "$AUTHORIZED_KEYS_FILE 文件编辑完成，继续执行脚本..."
 
 # 更改时区
 echo "设置时区为 Asia/Shanghai..."
-timedatectl set-timezone Asia/Shanghai
+if ! timedatectl set-timezone Asia/Shanghai; then
+  echo "警告：时区设置失败，请手动检查。"
+fi
 
 # 配置 UFW 防火墙
 echo "配置 UFW 防火墙..."
@@ -177,24 +211,24 @@ if [[ $ufw_status == *"Status: inactive"* ]]; then
 
   # 允许 SSH 端口
   echo "开放 SSH 端口: $SSH_PORT"
-  ufw allow $SSH_PORT comment "SSH"
-  
-  if [ "$is_nat_machine" == false ]; then
+  ufw allow "$SSH_PORT" comment "SSH"
+
+  if [ "$is_nat_machine" = false ]; then
     # 允许 HTTP 和 HTTPS 端口
-    ufw allow 80
-    ufw allow 443
+    ufw allow 80 comment "HTTP"
+    ufw allow 443 comment "HTTPS"
     ufw allow 5201 comment "iperf3"
-  elif [ "$is_nat_machine" == true ]; then
+  elif [ "$is_nat_machine" = true ]; then
     while true; do
-      read -p "请输入 iperf3 监听端口 (建议1024-65535之间): " IPERF3_PORT
-      if [[ $IPERF3_PORT =~ ^[0-9]+$ ]] && [ "$IPERF3_PORT" -ge 1024 ] && [ "$IPERF3_PORT" -le 65535 ]; then
+      read -r -p "请输入 iperf3 监听端口 (建议1024-65535之间): " IPERF3_PORT
+      if validate_port "$IPERF3_PORT" 1024; then
         echo "有效的端口号: $IPERF3_PORT"
         break
       else
         echo "无效的端口号，请输入1024-65535之间的数字。"
       fi
     done
-    ufw allow $IPERF3_PORT comment "iperf3"
+    ufw allow "$IPERF3_PORT" comment "iperf3"
   fi
 
   # 启动 UFW 防火墙，避免提示 y/n
@@ -222,14 +256,12 @@ fi
 # 安装 docker
 echo "安装 Docker..."
 read -r -p "是否选择安装 Docker: (y/n)" docker_choice
-if [[ ${docker_choice,,} == "y" ]]; then
+if [[ "${docker_choice,,}" == "y" ]]; then
   echo "正在安装 Docker..."
-  curl -fsSL https://get.docker.com | sh
-  # 检查 Docker 是否安装成功
-  if command -v docker &> /dev/null; then
+  if curl -fsSL https://get.docker.com | sh; then
     echo "Docker 安装成功！"
   else
-    echo "Docker 安装失败，请检查错误信息。"
+    echo "错误：Docker 安装失败，请检查网络连接或手动安装。"
     exit 1
   fi
   sleep 1
